@@ -13,9 +13,10 @@ import { useTheme } from '../theme/ThemeContext';
 
 interface ProfileScreenProps {
   onLogout?: () => void;
+  onNavigateToSettings?: () => void;
 }
 
-const ProfileScreen: React.FC<ProfileScreenProps> = ({ onLogout }) => {
+const ProfileScreen: React.FC<ProfileScreenProps> = ({ onLogout, onNavigateToSettings }) => {
   const { theme, toggleTheme } = useTheme();
   const [fadeAnim] = useState(new Animated.Value(0));
   const [slideAnim] = useState(new Animated.Value(50));
@@ -236,6 +237,27 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onLogout }) => {
       textDecorationLine: 'underline',
       textAlign: 'center',
     },
+    settingsButton: {
+      position: 'absolute',
+      top: 50,
+      right: 20,
+      backgroundColor: theme.colors.surface,
+      borderRadius: 20,
+      padding: 8,
+      shadowColor: theme.colors.shadow,
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 3,
+      zIndex: 1000,
+    },
+    settingsButtonText: {
+      fontSize: 18,
+      color: theme.colors.text,
+    },
   });
 
   return (
@@ -248,6 +270,12 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onLogout }) => {
         },
       ]}
     >
+      {/* 右上角设置按钮 */}
+      {onNavigateToSettings && (
+        <TouchableOpacity style={styles.settingsButton} onPress={onNavigateToSettings}>
+          <Text style={styles.settingsButtonText}>⚙️</Text>
+        </TouchableOpacity>
+      )}
       <ScrollView
         style={styles.scrollContainer}
         showsVerticalScrollIndicator={false}

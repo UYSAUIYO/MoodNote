@@ -16,7 +16,7 @@ import {
   StyleSheet,
 } from 'react-native';
 
-import { ThemeProvider, useTheme, ThemeMode, useThemeManager } from './src/theme/ThemeContext';
+import { ThemeProvider, useTheme } from './src/theme/ThemeContext';
 import LoginScreen from './src/screens/LoginScreen';
 import RegisterScreen from './src/screens/RegisterScreen';
 import HomeScreen from './src/screens/HomeScreen';
@@ -24,14 +24,21 @@ import StatsScreen from './src/screens/StatsScreen';
 import AchievementsScreen from './src/screens/AchievementsScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
 import DiaryListScreen from './src/screens/DiaryListScreen';
+import SettingsScreen from './src/screens/SettingsScreen';
+import ProfileEditScreen from './src/screens/ProfileEditScreen';
 import BottomTabNavigator from './src/components/BottomTabNavigator';
+import SplashScreen from './src/components/SplashScreen';
 
 const AppContent = () => {
-  const { theme, themeMode } = useTheme();
-  const { toggleTheme, isTransitioning, getThemeStatus } = useThemeManager();
-  const [currentScreen, setCurrentScreen] = useState<'login' | 'register' | 'home' | 'diaryList'>('login');
+  const { theme, toggleTheme } = useTheme();
+  const [showSplash, setShowSplash] = useState(true);
+  const [currentScreen, setCurrentScreen] = useState<'login' | 'register' | 'home' | 'diaryList' | 'settings' | 'profileEdit'>('login');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [activeTab, setActiveTab] = useState('home');
+
+  const handleSplashFinish = () => {
+    setShowSplash(false);
+  };
 
   const styles = useMemo(() => StyleSheet.create({
     container: {
@@ -123,6 +130,27 @@ const AppContent = () => {
     setCurrentScreen('home');
   };
 
+  // 导航到设置页面
+  const handleNavigateToSettings = () => {
+    setCurrentScreen('settings');
+  };
+
+  // 从设置页面返回
+  const handleGoBackFromSettings = () => {
+    setCurrentScreen('home');
+    setActiveTab('profile');
+  };
+
+  // 导航到账号资料编辑页面
+  const handleNavigateToProfileEdit = () => {
+    setCurrentScreen('profileEdit');
+  };
+
+  // 从账号资料编辑页面返回
+  const handleGoBackFromProfileEdit = () => {
+    setCurrentScreen('settings');
+  };
+
   // 渲染当前活跃的标签页内容
   const renderActiveTabContent = () => {
     switch (activeTab) {
@@ -133,11 +161,16 @@ const AppContent = () => {
       case 'achievements':
         return <AchievementsScreen />;
       case 'profile':
-        return <ProfileScreen onLogout={handleLogout} />;
+        return <ProfileScreen onLogout={handleLogout} onNavigateToSettings={handleNavigateToSettings} />;
       default:
         return <HomeScreen onLogout={handleLogout} onNavigateToDiaryList={handleNavigateToDiaryList} />;
     }
   };
+
+  // 如果显示启动动画，直接返回启动动画组件
+  if (showSplash) {
+    return <SplashScreen onFinish={handleSplashFinish} />;
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -149,15 +182,9 @@ const AppContent = () => {
       
       {/* 主题切换按钮 - 只在登录和注册界面显示 */}
       {!isLoggedIn && (
-        <TouchableOpacity 
-          style={[styles.themeToggle, isTransitioning && { opacity: 0.6 }]} 
-          onPress={toggleTheme}
-          disabled={isTransitioning}
-        >
+        <TouchableOpacity style={styles.themeToggle} onPress={toggleTheme}>
           <Text style={styles.themeToggleText}>
-            {themeMode === ThemeMode.LIGHT ? '🌞 亮色' : 
-             themeMode === ThemeMode.DARK ? '🌙 暗色' : 
-             '🔄 跟随系统'}
+            {theme.isDark ? '🌞 亮色' : '🌙 暗色'}
           </Text>
         </TouchableOpacity>
       )}
@@ -173,6 +200,13 @@ const AppContent = () => {
       {isLoggedIn ? (
         currentScreen === 'diaryList' ? (
           <DiaryListScreen onGoBack={handleGoBackFromDiaryList} />
+        ) : currentScreen === 'settings' ? (
+          <SettingsScreen 
+            onGoBack={handleGoBackFromSettings} 
+            onNavigateToProfile={handleNavigateToProfileEdit}
+          />
+        ) : currentScreen === 'profileEdit' ? (
+          <ProfileEditScreen onGoBack={handleGoBackFromProfileEdit} />
         ) : (
           <>
             <View style={styles.mainContent}>

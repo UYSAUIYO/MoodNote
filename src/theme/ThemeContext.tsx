@@ -1,6 +1,5 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useColorScheme } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // 主题类型定义
 export interface Theme {
@@ -98,109 +97,37 @@ const darkTheme: Theme = {
   },
 };
 
-// 主题模式枚举
-export enum ThemeMode {
-  LIGHT = 'light',
-  DARK = 'dark',
-  SYSTEM = 'system'
-}
-
 // 主题上下文
 interface ThemeContextType {
   theme: Theme;
   isDark: boolean;
-  themeMode: ThemeMode;
   toggleTheme: () => void;
-  setThemeMode: (mode: ThemeMode) => void;
-  isSystemFollowing: boolean;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-// 存储键名
-const THEME_STORAGE_KEY = '@MoodNote:themeMode';
-
 // 主题提供者组件
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const systemColorScheme = useColorScheme();
-  const [themeMode, setThemeModeState] = useState<ThemeMode>(ThemeMode.SYSTEM);
   const [isDark, setIsDark] = useState(systemColorScheme === 'dark');
-  const [isInitialized, setIsInitialized] = useState(false);
+  const [isManualOverride, setIsManualOverride] = useState(false);
 
-  // 初始化主题设置
+  // 只有在没有手动切换时才跟随系统主题
   useEffect(() => {
-    const initializeTheme = async () => {
-      try {
-        const savedThemeMode = await AsyncStorage.getItem(THEME_STORAGE_KEY);
-        if (savedThemeMode && Object.values(ThemeMode).includes(savedThemeMode as ThemeMode)) {
-          setThemeModeState(savedThemeMode as ThemeMode);
-        }
-      } catch (error) {
-        console.warn('Failed to load theme preference:', error);
-      } finally {
-        setIsInitialized(true);
-      }
-    };
-
-    initializeTheme();
-  }, []);
-
-  // 根据主题模式和系统设置更新isDark状态
-  useEffect(() => {
-    if (!isInitialized) return;
-
-    switch (themeMode) {
-      case ThemeMode.LIGHT:
-        setIsDark(false);
-        break;
-      case ThemeMode.DARK:
-        setIsDark(true);
-        break;
-      case ThemeMode.SYSTEM:
-        setIsDark(systemColorScheme === 'dark');
-        break;
+    if (!isManualOverride && systemColorScheme !== null) {
+      setIsDark(systemColorScheme === 'dark');
     }
-  }, [themeMode, systemColorScheme, isInitialized]);
+  }, [systemColorScheme, isManualOverride]);
 
-  // 设置主题模式并持久化
-  const setThemeMode = useCallback(async (mode: ThemeMode) => {
-    try {
-      setThemeModeState(mode);
-      await AsyncStorage.setItem(THEME_STORAGE_KEY, mode);
-    } catch (error) {
-      console.warn('Failed to save theme preference:', error);
-    }
-  }, []);
-
-  // 切换主题（在亮色、暗色、跟随系统之间循环）
-  const toggleTheme = useCallback(() => {
-    const modes = [ThemeMode.LIGHT, ThemeMode.DARK, ThemeMode.SYSTEM];
-    const currentIndex = modes.indexOf(themeMode);
-    const nextIndex = (currentIndex + 1) % modes.length;
-    setThemeMode(modes[nextIndex]);
-  }, [themeMode, setThemeMode]);
-
-  // 是否正在跟随系统主题
-  const isSystemFollowing = themeMode === ThemeMode.SYSTEM;
+  const toggleTheme = () => {
+    setIsDark(!isDark);
+    setIsManualOverride(true);
+  };
 
   const theme = isDark ? darkTheme : lightTheme;
 
-  // 在初始化完成前不渲染，避免闪烁
-  if (!isInitialized) {
-    return null;
-  }
-
   return (
-    <ThemeContext.Provider 
-      value={{ 
-        theme, 
-        isDark, 
-        themeMode, 
-        toggleTheme, 
-        setThemeMode, 
-        isSystemFollowing 
-      }}
-    >
+    <ThemeContext.Provider value={{ theme, isDark, toggleTheme }}>
       {children}
     </ThemeContext.Provider>
   );
@@ -216,5 +143,3 @@ export const useTheme = (): ThemeContextType => {
 };
 
 export { lightTheme, darkTheme };
-export { ThemeUtils, ThemeConstants } from './ThemeUtils';
-export { useThemeManager, useSimpleTheme, useThemeStatus, useThemeStyles } from './useThemeManager';
