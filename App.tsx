@@ -5,7 +5,7 @@
  * @format
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import {
   SafeAreaView,
   StatusBar,
@@ -14,6 +14,9 @@ import {
   TouchableOpacity,
   Text,
   StyleSheet,
+  BackHandler,
+  Alert,
+  ToastAndroid,
 } from 'react-native';
 
 import { ThemeProvider, useTheme } from './src/theme/ThemeContext';
@@ -32,13 +35,94 @@ import SplashScreen from './src/components/SplashScreen';
 const AppContent = () => {
   const { theme, toggleTheme } = useTheme();
   const [showSplash, setShowSplash] = useState(true);
-  const [currentScreen, setCurrentScreen] = useState<'login' | 'register' | 'home' | 'diaryList' | 'settings' | 'profileEdit'>('login');
+  const [currentScreen, setCurrentScreen] = useState<'login' | 'register' | 'home' | 'diaryList' | 'settings' | 'profileEdit' | 'writeDiary'>('login');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [activeTab, setActiveTab] = useState('home');
+  const [backPressCount, setBackPressCount] = useState(0);
+  const backPressTimer = useRef<NodeJS.Timeout | null>(null);
 
   const handleSplashFinish = () => {
     setShowSplash(false);
   };
+
+  // 处理Android返回键
+  const handleBackPress = () => {
+    // 如果在启动页面，不处理返回键
+    if (showSplash) {
+      return false;
+    }
+
+    // 如果未登录，在登录和注册页面之间切换
+    if (!isLoggedIn) {
+      if (currentScreen === 'register') {
+        setCurrentScreen('login');
+        return true;
+      }
+      // 在登录页面，显示退出确认
+      Alert.alert(
+        '退出应用',
+        '确定要退出应用吗？',
+        [
+          { text: '取消', style: 'cancel' },
+          { text: '确定', onPress: () => BackHandler.exitApp() }
+        ]
+      );
+      return true;
+    }
+
+    // 已登录状态下的返回逻辑
+    if (currentScreen === 'profileEdit') {
+      // 二级页面：账号资料编辑 -> 设置页面
+      setCurrentScreen('settings');
+      return true;
+    } else if (currentScreen === 'writeDiary') {
+      // 二级页面：写日记 -> 日记列表
+      setCurrentScreen('diaryList');
+      return true;
+    } else if (currentScreen === 'settings' || currentScreen === 'diaryList') {
+      // 一级页面：设置/日记列表 -> 主页
+      setCurrentScreen('home');
+      setActiveTab('home');
+      return true;
+    } else if (currentScreen === 'home') {
+      // 主页：双击退出逻辑
+      if (backPressCount === 0) {
+        setBackPressCount(1);
+        ToastAndroid.show('再按一次退出应用', ToastAndroid.SHORT);
+        
+        // 2秒后重置计数
+        if (backPressTimer.current) {
+          clearTimeout(backPressTimer.current);
+        }
+        backPressTimer.current = setTimeout(() => {
+          setBackPressCount(0);
+        }, 2000);
+        
+        return true;
+      } else {
+        // 第二次按返回键，退出应用
+        if (backPressTimer.current) {
+          clearTimeout(backPressTimer.current);
+        }
+        BackHandler.exitApp();
+        return true;
+      }
+    }
+
+    return false;
+  };
+
+  // 监听返回键
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackPress);
+    
+    return () => {
+      backHandler.remove();
+      if (backPressTimer.current) {
+        clearTimeout(backPressTimer.current);
+      }
+    };
+  }, [showSplash, isLoggedIn, currentScreen, backPressCount]);
 
   const styles = useMemo(() => StyleSheet.create({
     container: {
@@ -92,6 +176,31 @@ const AppContent = () => {
     debugButtonText: {
       color: theme.colors.buttonText,
       fontSize: 12,
+      fontWeight: '600',
+    },
+    // 临时写日记页面样式
+    tempScreen: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: theme.colors.background,
+      paddingHorizontal: theme.spacing.lg,
+    },
+    tempScreenText: {
+      fontSize: 18,
+      color: theme.colors.text,
+      marginBottom: theme.spacing.xl,
+      textAlign: 'center',
+    },
+    tempBackButton: {
+      backgroundColor: theme.colors.primary,
+      paddingHorizontal: theme.spacing.lg,
+      paddingVertical: theme.spacing.md,
+      borderRadius: theme.borderRadius.md,
+    },
+    tempBackButtonText: {
+      color: theme.colors.buttonText,
+      fontSize: 16,
       fontWeight: '600',
     },
   }), [theme]);
@@ -151,6 +260,16 @@ const AppContent = () => {
     setCurrentScreen('settings');
   };
 
+  // 导航到写日记页面
+  const handleNavigateToWriteDiary = () => {
+    setCurrentScreen('writeDiary');
+  };
+
+  // 从写日记页面返回
+  const handleGoBackFromWriteDiary = () => {
+    setCurrentScreen('diaryList');
+  };
+
   // 渲染当前活跃的标签页内容
   const renderActiveTabContent = () => {
     switch (activeTab) {
@@ -199,7 +318,10 @@ const AppContent = () => {
       {/* 根据登录状态和当前屏幕显示不同组件 */}
       {isLoggedIn ? (
         currentScreen === 'diaryList' ? (
-          <DiaryListScreen onGoBack={handleGoBackFromDiaryList} />
+          <DiaryListScreen 
+            onGoBack={handleGoBackFromDiaryList} 
+            onWriteDiary={handleNavigateToWriteDiary}
+          />
         ) : currentScreen === 'settings' ? (
           <SettingsScreen 
             onGoBack={handleGoBackFromSettings} 
@@ -207,6 +329,16 @@ const AppContent = () => {
           />
         ) : currentScreen === 'profileEdit' ? (
           <ProfileEditScreen onGoBack={handleGoBackFromProfileEdit} />
+        ) : currentScreen === 'writeDiary' ? (
+          <View style={styles.tempScreen}>
+            <Text style={styles.tempScreenText}>写日记页面开发中...</Text>
+            <TouchableOpacity 
+              style={styles.tempBackButton} 
+              onPress={handleGoBackFromWriteDiary}
+            >
+              <Text style={styles.tempBackButtonText}>返回</Text>
+            </TouchableOpacity>
+          </View>
         ) : (
           <>
             <View style={styles.mainContent}>

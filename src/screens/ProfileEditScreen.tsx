@@ -15,10 +15,13 @@ import {
   Animated,
   Image,
   Modal,
+  PermissionsAndroid,
+  Platform,
 } from 'react-native';
 import { useTheme } from '../theme/ThemeContext';
 import DatePicker from '../components/DatePicker';
 import UniversitySearch from '../components/UniversitySearch';
+import { launchCamera, launchImageLibrary, ImagePickerResponse, MediaType } from 'react-native-image-picker';
 
 interface ProfileEditScreenProps {
   onGoBack: () => void;
@@ -60,14 +63,113 @@ const ProfileEditScreen: React.FC<ProfileEditScreenProps> = ({ onGoBack }) => {
     Alert.alert('保存成功', '个人资料已更新');
   };
 
+  // 检查相机权限
+  const checkCameraPermission = async (): Promise<boolean> => {
+    if (Platform.OS === 'android') {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.CAMERA,
+          {
+            title: '相机权限',
+            message: '需要访问相机来拍摄头像',
+            buttonNeutral: '稍后询问',
+            buttonNegative: '拒绝',
+            buttonPositive: '允许',
+          }
+        );
+        return granted === PermissionsAndroid.RESULTS.GRANTED;
+      } catch (err) {
+        console.warn(err);
+        return false;
+      }
+    }
+    return true; // iOS会自动处理权限
+  };
+
+  // 检查存储权限
+  const checkStoragePermission = async (): Promise<boolean> => {
+    if (Platform.OS === 'android') {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+          {
+            title: '存储权限',
+            message: '需要访问存储来选择头像',
+            buttonNeutral: '稍后询问',
+            buttonNegative: '拒绝',
+            buttonPositive: '允许',
+          }
+        );
+        return granted === PermissionsAndroid.RESULTS.GRANTED;
+      } catch (err) {
+        console.warn(err);
+        return false;
+      }
+    }
+    return true; // iOS会自动处理权限
+  };
+
+  // 处理图片选择结果
+  const handleImagePickerResponse = (response: ImagePickerResponse) => {
+    if (response.didCancel || response.errorMessage) {
+      if (response.errorMessage) {
+        Alert.alert('错误', response.errorMessage);
+      }
+      return;
+    }
+
+    if (response.assets && response.assets.length > 0) {
+      const asset = response.assets[0];
+      if (asset.uri) {
+        setAvatar(asset.uri);
+      }
+    }
+  };
+
+  // 拍照
+  const handleTakePhoto = async () => {
+    const hasPermission = await checkCameraPermission();
+    if (!hasPermission) {
+      Alert.alert('权限不足', '需要相机权限才能拍照');
+      return;
+    }
+
+    const options = {
+      mediaType: 'photo' as MediaType,
+      quality: 0.8 as const,
+      maxWidth: 800,
+      maxHeight: 800,
+    };
+
+    launchCamera(options, handleImagePickerResponse);
+  };
+
+  // 从相册选择
+  const handleSelectFromLibrary = async () => {
+    const hasPermission = await checkStoragePermission();
+    if (!hasPermission) {
+      Alert.alert('权限不足', '需要存储权限才能访问相册');
+      return;
+    }
+
+    const options = {
+      mediaType: 'photo' as MediaType,
+      quality: 0.8 as const,
+      maxWidth: 800,
+      maxHeight: 800,
+    };
+
+    launchImageLibrary(options, handleImagePickerResponse);
+  };
+
   const handleAvatarPress = () => {
     Alert.alert(
       '更换头像',
       '请选择头像来源',
       [
         { text: '取消', style: 'cancel' },
-        { text: '拍照', onPress: () => Alert.alert('提示', '拍照功能开发中') },
-        { text: '相册', onPress: () => Alert.alert('提示', '相册功能开发中') },
+        { text: '拍照', onPress: handleTakePhoto },
+        { text: '相册', onPress: handleSelectFromLibrary },
       ]
     );
   };

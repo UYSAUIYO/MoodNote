@@ -34,9 +34,10 @@ type FilterType = 'all' | 'month' | 'dateRange' | 'specificDate' | 'search';
 
 interface DiaryListScreenProps {
   onGoBack: () => void;
+  onWriteDiary?: () => void;
 }
 
-const DiaryListScreen: React.FC<DiaryListScreenProps> = ({ onGoBack }) => {
+const DiaryListScreen: React.FC<DiaryListScreenProps> = ({ onGoBack, onWriteDiary }) => {
   const { theme } = useTheme();
   
   // 示例数据
@@ -439,6 +440,30 @@ const DiaryListScreen: React.FC<DiaryListScreenProps> = ({ onGoBack }) => {
       fontSize: 14,
       color: theme.colors.text,
     },
+    // 悬浮按钮样式
+    floatingButton: {
+      position: 'absolute',
+      bottom: 30,
+      left: 20,
+      width: 56,
+      height: 56,
+      borderRadius: 28,
+      backgroundColor: theme.colors.primary,
+      justifyContent: 'center',
+      alignItems: 'center',
+      shadowColor: theme.colors.shadow,
+      shadowOffset: {
+        width: 0,
+        height: 4,
+      },
+      shadowOpacity: 0.3,
+      shadowRadius: 8,
+      elevation: 8,
+    },
+    floatingButtonIcon: {
+      fontSize: 24,
+      color: theme.colors.buttonText,
+    },
   }), [theme]);
   
   // 渲染筛选信息
@@ -536,6 +561,15 @@ const DiaryListScreen: React.FC<DiaryListScreenProps> = ({ onGoBack }) => {
           </View>
         )}
       </ScrollView>
+      
+      {/* 悬浮写日记按钮 */}
+      <TouchableOpacity 
+        style={styles.floatingButton} 
+        onPress={onWriteDiary}
+        activeOpacity={0.8}
+      >
+        <Text style={styles.floatingButtonIcon}>✏️</Text>
+      </TouchableOpacity>
       
       {/* 筛选模态框 */}
       <Modal
