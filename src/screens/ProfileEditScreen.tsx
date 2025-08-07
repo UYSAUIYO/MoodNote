@@ -21,6 +21,7 @@ import {
 import { useTheme } from '../theme/ThemeContext';
 import DatePicker from '../components/DatePicker';
 import UniversitySearch from '../components/UniversitySearch';
+import CustomTextInput from '../components/CustomTextInput';
 import { launchCamera, launchImageLibrary, ImagePickerResponse, MediaType } from 'react-native-image-picker';
 
 interface ProfileEditScreenProps {
@@ -333,13 +334,11 @@ const ProfileEditScreen: React.FC<ProfileEditScreenProps> = ({ onGoBack }) => {
 
         {/* 昵称 */}
         <View style={styles.inputGroup}>
-          <Text style={styles.inputLabel}>昵称</Text>
-          <TextInput
-            style={styles.textInput}
+          <CustomTextInput
+            label="昵称"
             value={nickname}
             onChangeText={setNickname}
             placeholder="请输入昵称"
-            placeholderTextColor={theme.colors.textSecondary}
             maxLength={20}
           />
         </View>
@@ -360,15 +359,14 @@ const ProfileEditScreen: React.FC<ProfileEditScreenProps> = ({ onGoBack }) => {
 
         {/* 个性签名 */}
         <View style={styles.inputGroup}>
-          <Text style={styles.inputLabel}>个性签名</Text>
-          <TextInput
-            style={[styles.textInput, styles.textArea]}
+          <CustomTextInput
+            label="个性签名"
             value={signature}
             onChangeText={setSignature}
             placeholder="写下你的个性签名吧"
-            placeholderTextColor={theme.colors.textSecondary}
             multiline
             maxLength={100}
+            style={{ minHeight: 80 }}
           />
         </View>
 

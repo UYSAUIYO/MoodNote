@@ -29,6 +29,7 @@ import ProfileScreen from './src/screens/ProfileScreen';
 import DiaryListScreen from './src/screens/DiaryListScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
 import ProfileEditScreen from './src/screens/ProfileEditScreen';
+import WriteDiaryScreen from './src/screens/WriteDiaryScreen';
 import BottomTabNavigator from './src/components/BottomTabNavigator';
 import SplashScreen from './src/components/SplashScreen';
 
@@ -330,15 +331,13 @@ const AppContent = () => {
         ) : currentScreen === 'profileEdit' ? (
           <ProfileEditScreen onGoBack={handleGoBackFromProfileEdit} />
         ) : currentScreen === 'writeDiary' ? (
-          <View style={styles.tempScreen}>
-            <Text style={styles.tempScreenText}>写日记页面开发中...</Text>
-            <TouchableOpacity 
-              style={styles.tempBackButton} 
-              onPress={handleGoBackFromWriteDiary}
-            >
-              <Text style={styles.tempBackButtonText}>返回</Text>
-            </TouchableOpacity>
-          </View>
+          <WriteDiaryScreen 
+            onGoBack={handleGoBackFromWriteDiary}
+            onSave={(diaryData) => {
+              // 这里可以添加保存日记的逻辑
+              console.log('保存日记:', diaryData);
+            }}
+          />
         ) : (
           <>
             <View style={styles.mainContent}>

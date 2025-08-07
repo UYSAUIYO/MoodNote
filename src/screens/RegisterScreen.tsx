@@ -14,6 +14,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { useTheme } from '../theme/ThemeContext';
+import CustomTextInput from '../components/CustomTextInput';
 
 interface RegisterScreenProps {
   onNavigateToLogin?: () => void;
@@ -326,92 +327,80 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ onNavigateToLogin, onRe
                 },
               ]}
             >
-              <View style={styles.inputContainer}>
-                <Text style={styles.inputLabel}>用户名</Text>
-                <Animated.View
-                  style={{
-                    transform: [{ scale: usernameInputScale }],
-                  }}
-                >
-                  <TextInput
-                    style={styles.input}
-                    placeholder="请输入用户名"
-                    placeholderTextColor={theme.colors.placeholder}
-                    value={username}
-                    onChangeText={setUsername}
-                    onFocus={() => handleInputFocus(usernameInputScale)}
-                    onBlur={() => handleInputBlur(usernameInputScale)}
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                  />
-                </Animated.View>
-              </View>
+              <Animated.View
+                style={{
+                  transform: [{ scale: usernameInputScale }],
+                }}
+              >
+                <CustomTextInput
+                  label="用户名"
+                  placeholder="请输入用户名"
+                  value={username}
+                  onChangeText={setUsername}
+                  onFocus={() => handleInputFocus(usernameInputScale)}
+                  onBlur={() => handleInputBlur(usernameInputScale)}
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  containerStyle={styles.inputContainer}
+                />
+              </Animated.View>
 
-              <View style={styles.inputContainer}>
-                <Text style={styles.inputLabel}>邮箱</Text>
-                <Animated.View
-                  style={{
-                    transform: [{ scale: emailInputScale }],
-                  }}
-                >
-                  <TextInput
-                    style={styles.input}
-                    placeholder="请输入邮箱地址"
-                    placeholderTextColor={theme.colors.placeholder}
-                    value={email}
-                    onChangeText={setEmail}
-                    onFocus={() => handleInputFocus(emailInputScale)}
-                    onBlur={() => handleInputBlur(emailInputScale)}
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                  />
-                </Animated.View>
-              </View>
+              <Animated.View
+                style={{
+                  transform: [{ scale: emailInputScale }],
+                }}
+              >
+                <CustomTextInput
+                  label="邮箱"
+                  placeholder="请输入邮箱地址"
+                  value={email}
+                  onChangeText={setEmail}
+                  onFocus={() => handleInputFocus(emailInputScale)}
+                  onBlur={() => handleInputBlur(emailInputScale)}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  containerStyle={styles.inputContainer}
+                />
+              </Animated.View>
 
-              <View style={styles.inputContainer}>
-                <Text style={styles.inputLabel}>密码</Text>
-                <Animated.View
-                  style={{
-                    transform: [{ scale: passwordInputScale }],
-                  }}
-                >
-                  <TextInput
-                    style={styles.input}
-                    placeholder="请输入密码（至少6位）"
-                    placeholderTextColor={theme.colors.placeholder}
-                    value={password}
-                    onChangeText={setPassword}
-                    onFocus={() => handleInputFocus(passwordInputScale)}
-                    onBlur={() => handleInputBlur(passwordInputScale)}
-                    secureTextEntry
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                  />
-                </Animated.View>
-              </View>
+              <Animated.View
+                style={{
+                  transform: [{ scale: passwordInputScale }],
+                }}
+              >
+                <CustomTextInput
+                  label="密码"
+                  placeholder="请输入密码（至少6位）"
+                  value={password}
+                  onChangeText={setPassword}
+                  onFocus={() => handleInputFocus(passwordInputScale)}
+                  onBlur={() => handleInputBlur(passwordInputScale)}
+                  secureTextEntry
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  containerStyle={styles.inputContainer}
+                />
+              </Animated.View>
 
-              <View style={styles.inputContainer}>
-                <Text style={styles.inputLabel}>确认密码</Text>
-                <Animated.View
-                  style={{
-                    transform: [{ scale: confirmPasswordInputScale }],
-                  }}
-                >
-                  <TextInput
-                    style={styles.input}
-                    placeholder="请再次输入密码"
-                    placeholderTextColor={theme.colors.placeholder}
-                    value={confirmPassword}
-                    onChangeText={setConfirmPassword}
-                    onFocus={() => handleInputFocus(confirmPasswordInputScale)}
-                    onBlur={() => handleInputBlur(confirmPasswordInputScale)}
-                    secureTextEntry
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                  />
-                </Animated.View>
-              </View>
+              <Animated.View
+                style={{
+                  transform: [{ scale: confirmPasswordInputScale }],
+                }}
+              >
+                <CustomTextInput
+                  label="确认密码"
+                  placeholder="请再次输入密码"
+                  value={confirmPassword}
+                  onChangeText={setConfirmPassword}
+                  onFocus={() => handleInputFocus(confirmPasswordInputScale)}
+                  onBlur={() => handleInputBlur(confirmPasswordInputScale)}
+                  secureTextEntry
+                  autoCapitalize="none"
+                  autoCorrect={false}
+                  containerStyle={styles.inputContainer}
+                />
+              </Animated.View>
 
               <Animated.View
                 style={{
