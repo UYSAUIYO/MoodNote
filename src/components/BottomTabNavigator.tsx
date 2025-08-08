@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Dimensions,
+  Animated,
 } from 'react-native';
 import { useTheme } from '../theme/ThemeContext';
 import { HomeIcon, StatsIcon, AchievementIcon, ProfileIcon } from './Icons';
@@ -19,6 +20,24 @@ const BottomTabNavigator: React.FC<BottomTabNavigatorProps> = ({
   onTabPress,
 }) => {
   const { theme } = useTheme();
+  const [animatedValues] = React.useState(() => {
+    const values: { [key: string]: Animated.Value } = {};
+    ['home', 'stats', 'achievements', 'profile'].forEach(tab => {
+      values[tab] = new Animated.Value(0);
+    });
+    return values;
+  });
+
+  React.useEffect(() => {
+    // 重置所有动画值
+    Object.keys(animatedValues).forEach(tab => {
+      Animated.timing(animatedValues[tab], {
+        toValue: tab === activeTab ? 1 : 0,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
+    });
+  }, [activeTab, animatedValues]);
 
   const tabs = [
     { id: 'home', label: '主页', IconComponent: HomeIcon },
@@ -74,32 +93,53 @@ const BottomTabNavigator: React.FC<BottomTabNavigatorProps> = ({
       {tabs.map((tab) => {
         const { IconComponent } = tab;
         const isActive = activeTab === tab.id;
+        const animatedValue = animatedValues[tab.id];
+        
+        const scaleAnimation = animatedValue.interpolate({
+          inputRange: [0, 1],
+          outputRange: [1, 1.1],
+        });
+        
+        const opacityAnimation = animatedValue.interpolate({
+          inputRange: [0, 1],
+          outputRange: [0.7, 1],
+        });
         
         return (
           <TouchableOpacity
             key={tab.id}
             style={[
               styles.tab,
-            activeTab === tab.id && styles.activeTab,
-          ]}
-          onPress={() => onTabPress(tab.id)}
-          activeOpacity={0.7}
-        >
-          <View style={styles.iconContainer}>
-            <IconComponent 
-              size={24} 
-              color={isActive ? theme.colors.primary : theme.colors.textSecondary}
-            />
-          </View>
-          <Text
-            style={[
-              styles.label,
-              activeTab === tab.id && styles.activeLabel,
+              activeTab === tab.id && styles.activeTab,
             ]}
+            onPress={() => onTabPress(tab.id)}
+            activeOpacity={0.7}
           >
-            {tab.label}
-          </Text>
-        </TouchableOpacity>
+            <Animated.View 
+              style={[
+                styles.iconContainer,
+                {
+                  transform: [{ scale: scaleAnimation }],
+                  opacity: opacityAnimation,
+                }
+              ]}
+            >
+              <IconComponent 
+                size={24} 
+                color={isActive ? theme.colors.primary : theme.colors.textSecondary}
+                isActive={isActive}
+              />
+            </Animated.View>
+            <Animated.Text
+              style={[
+                styles.label,
+                activeTab === tab.id && styles.activeLabel,
+                { opacity: opacityAnimation }
+              ]}
+            >
+              {tab.label}
+            </Animated.Text>
+          </TouchableOpacity>
         );
       })}
     </View>

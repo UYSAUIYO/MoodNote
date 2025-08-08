@@ -19,6 +19,7 @@ import { useTheme } from '../theme/ThemeContext';
 import CustomTextInput from '../components/CustomTextInput';
 import EmojiPicker from '../components/EmojiPicker';
 import MoodPicker from '../components/MoodPicker';
+import { BackIcon, MoodIcon, EmojiIcon, ImageIcon, CameraIcon, TagIcon } from '../components/Icons';
 
 const { width } = Dimensions.get('window');
 
@@ -260,46 +261,70 @@ const WriteDiaryScreen: React.FC<WriteDiaryScreenProps> = ({ onGoBack, onSave })
       backgroundColor: theme.colors.background,
     },
     header: {
-      marginTop: 35,
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
       paddingHorizontal: theme.spacing.lg,
       paddingVertical: theme.spacing.md,
-      backgroundColor: theme.colors.surface,
-      borderBottomWidth: 1,
-      borderBottomColor: theme.colors.inputBorder,
+      paddingTop: Platform.OS === 'ios' ? 60 : 40,
+      backgroundColor: theme.colors.background,
     },
     backButton: {
-      padding: theme.spacing.sm,
-      borderRadius: theme.borderRadius.md,
-      backgroundColor: theme.colors.textSecondary + '20',
-    },
-    backButtonText: {
-      fontSize: 18,
-      color: theme.colors.textSecondary,
-      fontWeight: '600',
-    },
-    saveButton: {
-      paddingHorizontal: theme.spacing.lg,
-      paddingVertical: theme.spacing.sm,
-      borderRadius: theme.borderRadius.md,
-      backgroundColor: theme.colors.primary,
-    },
-    saveButtonText: {
-      fontSize: 16,
-      color: theme.colors.buttonText,
-      fontWeight: '600',
-    },
-    dateContainer: {
-      alignItems: 'center',
-      paddingVertical: theme.spacing.lg,
+      width: 40,
+      height: 40,
+      borderRadius: 20,
       backgroundColor: theme.colors.surface,
+      justifyContent: 'center',
+      alignItems: 'center',
+      shadowColor: '#000',
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.1,
+      shadowRadius: 3.84,
+      elevation: 5,
     },
-    dateText: {
+    headerTitle: {
       fontSize: 18,
       fontWeight: '600',
       color: theme.colors.text,
+    },
+    headerActions: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    checkButton: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      backgroundColor: theme.colors.primary,
+      justifyContent: 'center',
+      alignItems: 'center',
+      shadowColor: '#000',
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.1,
+      shadowRadius: 3.84,
+      elevation: 5,
+    },
+    checkButtonText: {
+      fontSize: 18,
+      color: theme.colors.buttonText,
+      fontWeight: '600',
+    },
+
+    dateContainer: {
+      alignItems: 'flex-start',
+      paddingHorizontal: theme.spacing.lg,
+      paddingVertical: theme.spacing.sm,
+    },
+    dateText: {
+      fontSize: 14,
+      fontWeight: '400',
+      color: theme.colors.textSecondary,
     },
     contentContainer: {
       flex: 1,
@@ -312,8 +337,12 @@ const WriteDiaryScreen: React.FC<WriteDiaryScreenProps> = ({ onGoBack, onSave })
     },
     titleInput: {
       flex: 1,
-      fontSize: 18,
+      fontSize: 20,
       fontWeight: '600',
+      color: theme.colors.text,
+      marginBottom: theme.spacing.md,
+      paddingVertical: theme.spacing.sm,
+      backgroundColor: 'transparent',
       minHeight: 52,
     },
     titleMoodContainer: {
@@ -326,39 +355,59 @@ const WriteDiaryScreen: React.FC<WriteDiaryScreenProps> = ({ onGoBack, onSave })
     titleMoodEmoji: {
       fontSize: 20,
     },
+    contentInputContainer: {
+      flex: 1,
+      position: 'relative',
+    },
     contentInput: {
       marginTop: theme.spacing.md,
       flex: 1,
       fontSize: 16,
       textAlignVertical: 'top',
       minHeight: 200,
+      backgroundColor: 'transparent',
+    },
+    placeholderContainer: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      paddingTop: 4,
+      paddingLeft: 4,
+      pointerEvents: 'none',
+    },
+    placeholderHighlight: {
+      fontSize: 16,
+      color: theme.colors.primary,
+      fontWeight: '500',
     },
     selectedMoodContainer: {
       flexDirection: 'row',
       alignItems: 'center',
-      marginTop: theme.spacing.md,
-      paddingHorizontal: theme.spacing.md,
-      paddingVertical: theme.spacing.sm,
-      backgroundColor: theme.colors.primary + '20',
-      borderRadius: theme.borderRadius.md,
+      marginVertical: theme.spacing.sm,
+      paddingHorizontal: theme.spacing.sm,
+      paddingVertical: theme.spacing.xs,
+      backgroundColor: theme.colors.primary + '10',
+      borderRadius: theme.borderRadius.sm,
       alignSelf: 'flex-start',
     },
     selectedMoodEmoji: {
-      fontSize: 20,
+      fontSize: 18,
       marginRight: theme.spacing.xs,
     },
     selectedMoodText: {
       fontSize: 14,
       color: theme.colors.primary,
+      marginLeft: theme.spacing.xs,
       fontWeight: '500',
     },
     tagsContainer: {
       flexDirection: 'row',
       flexWrap: 'wrap',
-      marginTop: theme.spacing.md,
+      marginVertical: theme.spacing.sm,
     },
     tag: {
-      backgroundColor: theme.colors.primary + '20',
+      backgroundColor: theme.colors.surface,
       borderRadius: theme.borderRadius.sm,
       paddingHorizontal: theme.spacing.sm,
       paddingVertical: theme.spacing.xs,
@@ -366,38 +415,47 @@ const WriteDiaryScreen: React.FC<WriteDiaryScreenProps> = ({ onGoBack, onSave })
       marginBottom: theme.spacing.xs,
       flexDirection: 'row',
       alignItems: 'center',
+      borderWidth: 1,
+      borderColor: theme.colors.inputBorder,
     },
     tagText: {
       fontSize: 12,
-      color: theme.colors.primary,
-      fontWeight: '500',
+      color: theme.colors.text,
       marginRight: theme.spacing.xs,
     },
     tagRemove: {
       fontSize: 14,
-      color: theme.colors.primary,
+      color: theme.colors.textSecondary,
       fontWeight: 'bold',
     },
     bottomToolbar: {
       flexDirection: 'row',
+      justifyContent: 'space-around',
       alignItems: 'center',
+      paddingVertical: theme.spacing.lg,
       paddingHorizontal: theme.spacing.lg,
-      paddingVertical: theme.spacing.md,
-      paddingBottom: Platform.OS === 'ios' ? theme.spacing.md : theme.spacing.lg,
       backgroundColor: theme.colors.surface,
       borderTopWidth: 1,
       borderTopColor: theme.colors.inputBorder,
     },
     toolButton: {
-      padding: theme.spacing.sm,
-      borderRadius: theme.borderRadius.md,
+      width: 44,
+      height: 44,
+      borderRadius: 22,
       backgroundColor: theme.colors.background,
-      marginRight: theme.spacing.sm,
-      minWidth: 44,
+      justifyContent: 'center',
       alignItems: 'center',
+      shadowColor: '#000',
+      shadowOffset: {
+        width: 0,
+        height: 1,
+      },
+      shadowOpacity: 0.1,
+      shadowRadius: 2,
+      elevation: 2,
     },
-    toolButtonText: {
-      fontSize: 20,
+    toolButtonActive: {
+      backgroundColor: theme.colors.primary + '20',
     },
     // 模态框样式
     modalOverlay: {
@@ -459,7 +517,7 @@ const WriteDiaryScreen: React.FC<WriteDiaryScreenProps> = ({ onGoBack, onSave })
 
     // 图片相关样式
     imagesContainer: {
-      marginTop: theme.spacing.md,
+      marginTop: theme.spacing.sm,
     },
     imagesList: {
       flexDirection: 'row',
@@ -470,9 +528,11 @@ const WriteDiaryScreen: React.FC<WriteDiaryScreenProps> = ({ onGoBack, onSave })
       height: 80,
       marginRight: theme.spacing.sm,
       marginBottom: theme.spacing.sm,
-      borderRadius: theme.borderRadius.md,
+      borderRadius: theme.borderRadius.sm,
       overflow: 'hidden',
       position: 'relative',
+      borderWidth: 1,
+      borderColor: theme.colors.inputBorder,
     },
     imagePreview: {
       width: '100%',
@@ -480,14 +540,22 @@ const WriteDiaryScreen: React.FC<WriteDiaryScreenProps> = ({ onGoBack, onSave })
     },
     imageRemoveButton: {
       position: 'absolute',
-      top: -5,
-      right: -5,
+      top: -6,
+      right: -6,
       width: 20,
       height: 20,
       borderRadius: 10,
       backgroundColor: theme.colors.error || '#ff4444',
       justifyContent: 'center',
       alignItems: 'center',
+      shadowColor: '#000',
+      shadowOffset: {
+        width: 0,
+        height: 1,
+      },
+      shadowOpacity: 0.2,
+      shadowRadius: 2,
+      elevation: 3,
     },
     imageRemoveText: {
       color: 'white',
@@ -505,12 +573,10 @@ const WriteDiaryScreen: React.FC<WriteDiaryScreenProps> = ({ onGoBack, onSave })
       flexDirection: 'row',
       alignItems: 'center',
       paddingVertical: theme.spacing.md,
+      paddingHorizontal: theme.spacing.md,
       borderBottomWidth: 1,
       borderBottomColor: theme.colors.inputBorder,
-    },
-    imageOptionIcon: {
-      fontSize: 24,
-      marginRight: theme.spacing.md,
+      gap: theme.spacing.md,
     },
     imageOptionText: {
       fontSize: 16,
@@ -529,11 +595,14 @@ const WriteDiaryScreen: React.FC<WriteDiaryScreenProps> = ({ onGoBack, onSave })
       {/* 头部导航 */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={handleGoBack}>
-          <Text style={styles.backButtonText}>‹</Text>
+          <BackIcon size={20} color={theme.colors.text} />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-          <Text style={styles.saveButtonText}>保存</Text>
-        </TouchableOpacity>
+        <Text style={styles.headerTitle}>写日记</Text>
+        <View style={styles.headerActions}>
+          <TouchableOpacity style={styles.checkButton} onPress={handleSave}>
+            <Text style={styles.checkButtonText}>✓</Text>
+          </TouchableOpacity>
+        </View>
       </View>
       
       {/* 日期显示 */}
@@ -546,11 +615,12 @@ const WriteDiaryScreen: React.FC<WriteDiaryScreenProps> = ({ onGoBack, onSave })
         {/* 标题输入区域 */}
         <View style={styles.titleContainer}>
           <CustomTextInput
-            placeholder="请输入日记标题..."
+            placeholder="标题"
             value={title}
             onChangeText={(text) => handleTextChange(text, 'title')}
             maxLength={50}
             style={styles.titleInput}
+            multiline={false}
           />
           {selectedMood && (
             <View style={styles.titleMoodContainer}>
@@ -560,14 +630,21 @@ const WriteDiaryScreen: React.FC<WriteDiaryScreenProps> = ({ onGoBack, onSave })
         </View>
         
         {/* 内容输入 */}
-        <CustomTextInput
-          ref={contentInputRef}
-          placeholder="记录你的心情和想法..."
-          value={content}
-          onChangeText={(text) => handleTextChange(text, 'content')}
-          multiline
-          style={styles.contentInput}
-        />
+        <View style={styles.contentInputContainer}>
+          <CustomTextInput
+            ref={contentInputRef}
+            placeholder="开始书写"
+            value={content}
+            onChangeText={(text) => handleTextChange(text, 'content')}
+            multiline
+            style={styles.contentInput}
+          />
+          {content === '' && (
+            <View style={styles.placeholderContainer}>
+              <Text style={styles.placeholderHighlight}>输入内容</Text>
+            </View>
+          )}
+        </View>
         
         {/* 选中的心情显示 */}
         {selectedMood && (
@@ -614,15 +691,15 @@ const WriteDiaryScreen: React.FC<WriteDiaryScreenProps> = ({ onGoBack, onSave })
       {/* 底部工具栏 */}
       <View style={styles.bottomToolbar}>
         <TouchableOpacity 
-          style={styles.toolButton} 
+          style={[styles.toolButton, selectedMood && styles.toolButtonActive]} 
           onPress={() => setShowMoodPicker(true)}
         >
-          <Text style={styles.toolButtonText}>😊</Text>
+          <MoodIcon size={24} color={selectedMood ? theme.colors.primary : theme.colors.textSecondary} />
         </TouchableOpacity>
         
         <TouchableOpacity 
           ref={emojiButtonRef}
-          style={styles.toolButton}
+          style={[styles.toolButton, showEmojiPicker && styles.toolButtonActive]}
           onPress={() => {
             setShowEmojiPicker(!showEmojiPicker);
             // 确保内容输入框保持焦点
@@ -633,29 +710,29 @@ const WriteDiaryScreen: React.FC<WriteDiaryScreenProps> = ({ onGoBack, onSave })
             }
           }}
         >
-          <Text style={styles.toolButtonText}>😀</Text>
+          <EmojiIcon size={24} color={showEmojiPicker ? theme.colors.primary : theme.colors.textSecondary} />
         </TouchableOpacity>
         
         <TouchableOpacity 
           ref={imageButtonRef}
-          style={styles.toolButton}
+          style={[styles.toolButton, images.length > 0 && styles.toolButtonActive]}
           onPress={() => setShowImageOptions(true)}
         >
-          <Text style={styles.toolButtonText}>🖼️</Text>
+          <ImageIcon size={24} color={images.length > 0 ? theme.colors.primary : theme.colors.textSecondary} />
         </TouchableOpacity>
         
         <TouchableOpacity 
           style={styles.toolButton}
           onPress={handleTakePhoto}
         >
-          <Text style={styles.toolButtonText}>📷</Text>
+          <CameraIcon size={24} color={theme.colors.textSecondary} />
         </TouchableOpacity>
         
         <TouchableOpacity 
-          style={styles.toolButton} 
+          style={[styles.toolButton, tags.length > 0 && styles.toolButtonActive]} 
           onPress={() => setShowTagInput(true)}
         >
-          <Text style={styles.toolButtonText}>#</Text>
+          <TagIcon size={24} color={tags.length > 0 ? theme.colors.primary : theme.colors.textSecondary} />
         </TouchableOpacity>
       </View>
       
@@ -728,7 +805,7 @@ const WriteDiaryScreen: React.FC<WriteDiaryScreenProps> = ({ onGoBack, onSave })
               style={styles.imageOptionButton}
               onPress={handleTakePhoto}
             >
-              <Text style={styles.imageOptionIcon}>📷</Text>
+              <CameraIcon size={24} color={theme.colors.text} />
               <Text style={styles.imageOptionText}>拍照</Text>
             </TouchableOpacity>
             
@@ -736,7 +813,7 @@ const WriteDiaryScreen: React.FC<WriteDiaryScreenProps> = ({ onGoBack, onSave })
               style={[styles.imageOptionButton, { borderBottomWidth: 0 }]}
               onPress={handleSelectImage}
             >
-              <Text style={styles.imageOptionIcon}>🖼️</Text>
+              <ImageIcon size={24} color={theme.colors.text} />
               <Text style={styles.imageOptionText}>从相册选择</Text>
             </TouchableOpacity>
             

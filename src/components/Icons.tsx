@@ -7,101 +7,187 @@ interface IconProps {
   size?: number;
   color?: string;
   style?: any;
+  isActive?: boolean;
 }
 
 // 主页图标
-export const HomeIcon: React.FC<IconProps> = ({ size = 24, color, style }) => {
+export const HomeIcon: React.FC<IconProps> = ({ size = 24, color, style, isActive = false }) => {
   const { theme } = useTheme();
   const iconColor = color || theme.colors.text;
   
   return (
     <View style={[{ width: size, height: size }, style]}>
       <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-        <Path
-          d="M3 12L5 10M5 10L12 3L19 10M5 10V20C5 20.5523 5.44772 21 6 21H9M19 10L21 12M19 10V20C19 20.5523 18.5523 21 18 21H15M9 21C9.55228 21 10 20.5523 10 20V16C10 15.4477 10.4477 15 11 15H13C13.5523 15 14 15.4477 14 16V20C14 20.5523 14.4477 21 15 21M9 21H15"
-          stroke={iconColor}
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          fill="none"
-        />
+        {isActive ? (
+          // 线性版本
+          <Path
+            d="M3 12L5 10L12 3L19 10L21 12M5 12V19C5 19.5304 5.21071 20.0391 5.58579 20.4142C5.96086 20.7893 6.46957 21 7 21H10V16C10 15.4696 10.2107 14.9609 10.5858 14.5858C10.9609 14.2107 11.4696 14 12 14C12.5304 14 13.0391 14.2107 13.4142 14.5858C13.7893 14.9609 14 15.4696 14 16V21H17C17.5304 21 18.0391 20.7893 18.4142 20.4142C18.7893 20.0391 19 19.5304 19 19V12L12 5L5 12Z"
+            stroke={iconColor}
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            fill="none"
+          />
+        ) : (
+          // 面性版本
+          <Path
+            d="M21.5 10.8L13.2 2.5C12.5 1.8 11.5 1.8 10.8 2.5L2.5 10.8C2.1 11.1 2 11.6 2 12V20C2 21.1 2.9 22 4 22H9C9.6 22 10 21.6 10 21V16C10 15.4 10.4 15 11 15H13C13.6 15 14 15.4 14 16V21C14 21.6 14.4 22 15 22H20C21.1 22 22 21.1 22 20V12C22 11.6 21.9 11.2 21.5 10.8Z"
+            fill={iconColor}
+          />
+        )}
       </Svg>
     </View>
   );
 };
 
 // 统计图标
-export const StatsIcon: React.FC<IconProps> = ({ size = 24, color, style }) => {
+export const StatsIcon: React.FC<IconProps> = ({ size = 24, color, style, isActive = false }) => {
   const { theme } = useTheme();
   const iconColor = color || theme.colors.text;
   
   return (
     <View style={[{ width: size, height: size }, style]}>
       <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-        <Rect
-          x="3"
-          y="16"
-          width="4"
-          height="5"
-          rx="1"
-          fill={iconColor}
-        />
-        <Rect
-          x="10"
-          y="12"
-          width="4"
-          height="9"
-          rx="1"
-          fill={iconColor}
-        />
-        <Rect
-          x="17"
-          y="8"
-          width="4"
-          height="13"
-          rx="1"
-          fill={iconColor}
-        />
+        {isActive ? (
+          // 线性版本
+          <>
+            <Rect
+              x="3"
+              y="16"
+              width="4"
+              height="5"
+              rx="1"
+              stroke={iconColor}
+              strokeWidth="2"
+              fill="none"
+            />
+            <Rect
+              x="10"
+              y="12"
+              width="4"
+              height="9"
+              rx="1"
+              stroke={iconColor}
+              strokeWidth="2"
+              fill="none"
+            />
+            <Rect
+              x="17"
+              y="8"
+              width="4"
+              height="13"
+              rx="1"
+              stroke={iconColor}
+              strokeWidth="2"
+              fill="none"
+            />
+          </>
+        ) : (
+          // 面性版本
+          <>
+            <Rect
+              x="3"
+              y="16"
+              width="4"
+              height="5"
+              rx="1"
+              fill={iconColor}
+            />
+            <Rect
+              x="10"
+              y="12"
+              width="4"
+              height="9"
+              rx="1"
+              fill={iconColor}
+            />
+            <Rect
+              x="17"
+              y="8"
+              width="4"
+              height="13"
+              rx="1"
+              fill={iconColor}
+            />
+          </>
+        )}
       </Svg>
     </View>
   );
 };
 
 // 成就图标
-export const AchievementIcon: React.FC<IconProps> = ({ size = 24, color, style }) => {
+export const AchievementIcon: React.FC<IconProps> = ({ size = 24, color, style, isActive = false }) => {
   const { theme } = useTheme();
   const iconColor = color || theme.colors.text;
   
   return (
     <View style={[{ width: size, height: size }, style]}>
       <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-        <Path
-          d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
-          fill={iconColor}
-        />
+        {isActive ? (
+          // 线性版本
+          <Path
+            d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
+            stroke={iconColor}
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            fill="none"
+          />
+        ) : (
+          // 面性版本
+          <Path
+            d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"
+            fill={iconColor}
+          />
+        )}
       </Svg>
     </View>
   );
 };
 
 // 个人资料图标
-export const ProfileIcon: React.FC<IconProps> = ({ size = 24, color, style }) => {
+export const ProfileIcon: React.FC<IconProps> = ({ size = 24, color, style, isActive = false }) => {
   const { theme } = useTheme();
   const iconColor = color || theme.colors.text;
   
   return (
     <View style={[{ width: size, height: size }, style]}>
       <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-        <Circle
-          cx="12"
-          cy="8"
-          r="4"
-          fill={iconColor}
-        />
-        <Path
-          d="M6 21C6 17.6863 8.68629 15 12 15C15.3137 15 18 17.6863 18 21"
-          fill={iconColor}
-        />
+        {isActive ? (
+          // 线性版本
+          <>
+            <Circle
+              cx="12"
+              cy="8"
+              r="4"
+              stroke={iconColor}
+              strokeWidth="2"
+              fill="none"
+            />
+            <Path
+              d="M6 21C6 17.6863 8.68629 15 12 15C15.3137 15 18 17.6863 18 21"
+              stroke={iconColor}
+              strokeWidth="2"
+              strokeLinecap="round"
+              fill="none"
+            />
+          </>
+        ) : (
+          // 面性版本
+          <>
+            <Circle
+              cx="12"
+              cy="8"
+              r="4"
+              fill={iconColor}
+            />
+            <Path
+              d="M6 21C6 17.6863 8.68629 15 12 15C15.3137 15 18 17.6863 18 21"
+              fill={iconColor}
+            />
+          </>
+        )}
       </Svg>
     </View>
   );
@@ -558,6 +644,163 @@ export const CloudIcon: React.FC<IconProps> = ({ size = 24, color, style }) => {
           strokeLinecap="round"
           strokeLinejoin="round"
           fill="none"
+        />
+      </Svg>
+    </View>
+  );
+};
+
+// 心情图标
+export const MoodIcon: React.FC<IconProps> = ({ size = 24, color, style }) => {
+  const { theme } = useTheme();
+  const iconColor = color || theme.colors.text;
+  
+  return (
+    <View style={[{ width: size, height: size }, style]}>
+      <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+        <Circle
+          cx="12"
+          cy="12"
+          r="10"
+          fill={iconColor}
+        />
+        <Circle
+          cx="8"
+          cy="10"
+          r="1.5"
+          fill={theme.colors.background}
+        />
+        <Circle
+          cx="16"
+          cy="10"
+          r="1.5"
+          fill={theme.colors.background}
+        />
+        <Path
+          d="M8 15C8.5 16 10 17 12 17C14 17 15.5 16 16 15"
+          stroke={theme.colors.background}
+          strokeWidth="2"
+          strokeLinecap="round"
+          fill="none"
+        />
+      </Svg>
+    </View>
+  );
+};
+
+// 表情图标
+export const EmojiIcon: React.FC<IconProps> = ({ size = 24, color, style }) => {
+  const { theme } = useTheme();
+  const iconColor = color || theme.colors.text;
+  
+  return (
+    <View style={[{ width: size, height: size }, style]}>
+      <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+        <Circle
+          cx="12"
+          cy="12"
+          r="10"
+          fill={iconColor}
+        />
+        <Circle
+          cx="8"
+          cy="9"
+          r="1"
+          fill={theme.colors.background}
+        />
+        <Circle
+          cx="16"
+          cy="9"
+          r="1"
+          fill={theme.colors.background}
+        />
+        <Path
+          d="M7 13C7.5 15 9.5 16.5 12 16.5C14.5 16.5 16.5 15 17 13"
+          stroke={theme.colors.background}
+          strokeWidth="2"
+          strokeLinecap="round"
+          fill="none"
+        />
+      </Svg>
+    </View>
+  );
+};
+
+// 图片/相册图标
+export const ImageIcon: React.FC<IconProps> = ({ size = 24, color, style }) => {
+  const { theme } = useTheme();
+  const iconColor = color || theme.colors.text;
+  
+  return (
+    <View style={[{ width: size, height: size }, style]}>
+      <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+        <Rect
+          x="3"
+          y="3"
+          width="18"
+          height="18"
+          rx="2"
+          ry="2"
+          fill={iconColor}
+        />
+        <Circle
+          cx="8.5"
+          cy="8.5"
+          r="1.5"
+          fill={theme.colors.background}
+        />
+        <Path
+          d="M21 15L16 10L5 21"
+          stroke={theme.colors.background}
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </Svg>
+    </View>
+  );
+};
+
+// 相机图标
+export const CameraIcon: React.FC<IconProps> = ({ size = 24, color, style }) => {
+  const { theme } = useTheme();
+  const iconColor = color || theme.colors.text;
+  
+  return (
+    <View style={[{ width: size, height: size }, style]}>
+      <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+        <Path
+          d="M23 19C23 19.5304 22.7893 20.0391 22.4142 20.4142C22.0391 20.7893 21.5304 21 21 21H3C2.46957 21 1.96086 20.7893 1.58579 20.4142C1.21071 20.0391 1 19.5304 1 19V8C1 7.46957 1.21071 6.96086 1.58579 6.58579C1.96086 6.21071 2.46957 6 3 6H7L9 3H15L17 6H21C21.5304 6 22.0391 6.21071 22.4142 6.58579C22.7893 6.96086 23 7.46957 23 8V19Z"
+          fill={iconColor}
+        />
+        <Circle
+          cx="12"
+          cy="13"
+          r="4"
+          fill={theme.colors.background}
+        />
+      </Svg>
+    </View>
+  );
+};
+
+// 标签图标
+export const TagIcon: React.FC<IconProps> = ({ size = 24, color, style }) => {
+  const { theme } = useTheme();
+  const iconColor = color || theme.colors.text;
+  
+  return (
+    <View style={[{ width: size, height: size }, style]}>
+      <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+        <Path
+          d="M20.59 13.41L13.42 20.58C13.2343 20.766 13.0137 20.9135 12.7709 21.0141C12.5281 21.1148 12.2678 21.1666 12.005 21.1666C11.7422 21.1666 11.4819 21.1148 11.2391 21.0141C10.9963 20.9135 10.7757 20.766 10.59 20.58L2 12V2H12L20.59 10.59C20.9625 10.9647 21.1716 11.4716 21.1716 12C21.1716 12.5284 20.9625 13.0353 20.59 13.41V13.41Z"
+          fill={iconColor}
+        />
+        <Circle
+          cx="7"
+          cy="7"
+          r="1.5"
+          fill={theme.colors.background}
         />
       </Svg>
     </View>
