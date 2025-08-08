@@ -12,10 +12,13 @@ import {
   Image,
   PermissionsAndroid,
   Platform,
+  KeyboardAvoidingView,
 } from 'react-native';
 import { launchCamera, launchImageLibrary, ImagePickerResponse, MediaType } from 'react-native-image-picker';
 import { useTheme } from '../theme/ThemeContext';
 import CustomTextInput from '../components/CustomTextInput';
+import EmojiPicker from '../components/EmojiPicker';
+import MoodPicker from '../components/MoodPicker';
 
 const { width } = Dimensions.get('window');
 
@@ -30,7 +33,7 @@ const WriteDiaryScreen: React.FC<WriteDiaryScreenProps> = ({ onGoBack, onSave })
   // 状态管理
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [selectedMood, setSelectedMood] = useState<{emoji: string, label: string} | null>(null);
+  const [selectedMood, setSelectedMood] = useState<{emoji: string, label: string, color: string} | null>(null);
   const [tags, setTags] = useState<string[]>([]);
   const [showMoodPicker, setShowMoodPicker] = useState(false);
   const [showTagInput, setShowTagInput] = useState(false);
@@ -43,34 +46,25 @@ const WriteDiaryScreen: React.FC<WriteDiaryScreenProps> = ({ onGoBack, onSave })
   // 引用
   const emojiButtonRef = useRef<any>(null);
   const imageButtonRef = useRef<any>(null);
+  const contentInputRef = useRef<any>(null);
   
-  // 心情选项
+  // 心情选项配置 - 与HomeScreen保持一致
   const moodOptions = [
-    { emoji: '😊', label: '开心' },
-    { emoji: '😢', label: '难过' },
-    { emoji: '😤', label: '疲惫' },
-    { emoji: '😌', label: '平静' },
-    { emoji: '🤔', label: '思考' },
-    { emoji: '💪', label: '活力' },
-    { emoji: '😴', label: '困倦' },
-    { emoji: '🥰', label: '幸福' },
-    { emoji: '😰', label: '焦虑' },
-    { emoji: '🤗', label: '温暖' },
+    { emoji: '😊', label: '开心', color: '#FFD93D' },  // 黄色 - 积极情绪
+    { emoji: '😔', label: '难过', color: '#6C7CE0' },  // 蓝色 - 消极情绪
+    { emoji: '😰', label: '焦虑', color: '#FF6B6B' },  // 红色 - 紧张情绪
+    { emoji: '😡', label: '愤怒', color: '#FF4757' },  // 深红色 - 愤怒情绪
+    { emoji: '😴', label: '疲惫', color: '#A4B0BE' },  // 灰色 - 疲劳状态
+    { emoji: '🤔', label: '思考', color: '#FFA502' },  // 橙色 - 思考状态
+    { emoji: '😌', label: '平静', color: '#7BED9F' },  // 绿色 - 平和情绪
+    { emoji: '😍', label: '兴奋', color: '#FF6348' },  // 橙红色 - 兴奋情绪
+    { emoji: '😢', label: '伤心', color: '#70A1FF' },  // 浅蓝色 - 悲伤情绪
+    { emoji: '😤', label: '烦躁', color: '#FF7675' },  // 粉红色 - 烦躁情绪
+    { emoji: '🥰', label: '感激', color: '#FD79A8' },  // 粉色 - 感恩情绪
+    { emoji: '😐', label: '无聊', color: '#FDCB6E' },  // 黄橙色 - 无聊状态
   ];
   
-  // 表情选项
-  const emojiOptions = [
-    '😀', '😃', '😄', '😁', '😆', '😅', '🤣', '😂', '🙂', '🙃',
-    '😉', '😊', '😇', '🥰', '😍', '🤩', '😘', '😗', '😚', '😙',
-    '😋', '😛', '😜', '🤪', '😝', '🤑', '🤗', '🤭', '🤫', '🤔',
-    '🤐', '🤨', '😐', '😑', '😶', '😏', '😒', '🙄', '😬', '🤥',
-    '😔', '😪', '🤤', '😴', '😷', '🤒', '🤕', '🤢', '🤮', '🤧',
-    '🥵', '🥶', '🥴', '😵', '🤯', '🤠', '🥳', '😎', '🤓', '🧐',
-    '😕', '😟', '🙁', '😮', '😯', '😲', '😳', '🥺', '😦', '😧',
-    '😨', '😰', '😥', '😢', '😭', '😱', '😖', '😣', '😞', '😓',
-    '😩', '😫', '🥱', '😤', '😡', '🤬', '😠', '🤯', '😈', '👿',
-    '💀', '☠️', '💩', '🤡', '👹', '👺', '👻', '👽', '👾', '🤖'
-  ];
+
   
   // 获取当前日期
   const getCurrentDate = () => {
@@ -172,7 +166,10 @@ const WriteDiaryScreen: React.FC<WriteDiaryScreenProps> = ({ onGoBack, onSave })
   const handleInsertEmoji = (emoji: string) => {
     setContent(prev => prev + emoji);
     setHasChanges(true);
-    setShowEmojiPicker(false);
+    // 保持输入框焦点，不关闭表情选择器
+    setTimeout(() => {
+      contentInputRef.current?.focus();
+    }, 100);
   };
   
   // 处理返回
@@ -225,7 +222,7 @@ const WriteDiaryScreen: React.FC<WriteDiaryScreenProps> = ({ onGoBack, onSave })
   };
   
   // 选择心情
-  const handleSelectMood = (mood: {emoji: string, label: string}) => {
+  const handleSelectMood = (mood: {emoji: string, label: string, color: string}) => {
     setSelectedMood(mood);
     setShowMoodPicker(false);
     setHasChanges(true);
@@ -308,11 +305,26 @@ const WriteDiaryScreen: React.FC<WriteDiaryScreenProps> = ({ onGoBack, onSave })
       flex: 1,
       paddingHorizontal: theme.spacing.lg,
     },
-    titleInput: {
+    titleContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
       marginTop: theme.spacing.lg,
+    },
+    titleInput: {
+      flex: 1,
       fontSize: 18,
       fontWeight: '600',
       minHeight: 52,
+    },
+    titleMoodContainer: {
+      marginLeft: theme.spacing.sm,
+      paddingHorizontal: theme.spacing.sm,
+      paddingVertical: theme.spacing.xs,
+      backgroundColor: theme.colors.primary + '15',
+      borderRadius: theme.borderRadius.md,
+    },
+    titleMoodEmoji: {
+      fontSize: 20,
     },
     contentInput: {
       marginTop: theme.spacing.md,
@@ -371,6 +383,7 @@ const WriteDiaryScreen: React.FC<WriteDiaryScreenProps> = ({ onGoBack, onSave })
       alignItems: 'center',
       paddingHorizontal: theme.spacing.lg,
       paddingVertical: theme.spacing.md,
+      paddingBottom: Platform.OS === 'ios' ? theme.spacing.md : theme.spacing.lg,
       backgroundColor: theme.colors.surface,
       borderTopWidth: 1,
       borderTopColor: theme.colors.inputBorder,
@@ -407,31 +420,7 @@ const WriteDiaryScreen: React.FC<WriteDiaryScreenProps> = ({ onGoBack, onSave })
       textAlign: 'center',
       marginBottom: theme.spacing.lg,
     },
-    moodGrid: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      justifyContent: 'space-between',
-    },
-    moodOption: {
-      width: '30%',
-      alignItems: 'center',
-      paddingVertical: theme.spacing.md,
-      marginBottom: theme.spacing.sm,
-      borderRadius: theme.borderRadius.md,
-      backgroundColor: theme.colors.background,
-    },
-    moodOptionSelected: {
-      backgroundColor: theme.colors.primary + '20',
-    },
-    moodEmoji: {
-      fontSize: 32,
-      marginBottom: theme.spacing.xs,
-    },
-    moodLabel: {
-      fontSize: 12,
-      color: theme.colors.text,
-      fontWeight: '500',
-    },
+
     tagInputContainer: {
       marginTop: theme.spacing.md,
     },
@@ -467,40 +456,7 @@ const WriteDiaryScreen: React.FC<WriteDiaryScreenProps> = ({ onGoBack, onSave })
     confirmButtonText: {
       color: theme.colors.buttonText,
     },
-    // 表情选择器样式
-    emojiPickerContainer: {
-      position: 'absolute',
-      bottom: 80,
-      left: theme.spacing.lg,
-      right: theme.spacing.lg,
-      backgroundColor: theme.colors.surface,
-      borderRadius: theme.borderRadius.lg,
-      padding: theme.spacing.md,
-      maxHeight: 200,
-      shadowColor: '#000',
-      shadowOffset: {
-        width: 0,
-        height: 2,
-      },
-      shadowOpacity: 0.25,
-      shadowRadius: 3.84,
-      elevation: 5,
-    },
-    emojiGrid: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      justifyContent: 'space-between',
-    },
-    emojiItem: {
-      width: '10%',
-      aspectRatio: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      marginBottom: theme.spacing.xs,
-    },
-    emojiText: {
-      fontSize: 20,
-    },
+
     // 图片相关样式
     imagesContainer: {
       marginTop: theme.spacing.md,
@@ -564,7 +520,12 @@ const WriteDiaryScreen: React.FC<WriteDiaryScreenProps> = ({ onGoBack, onSave })
   }), [theme]);
   
   return (
-    <SafeAreaView style={styles.container}>
+    <KeyboardAvoidingView 
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 88 : 0}
+    >
+      <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.background }]}>
       {/* 头部导航 */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={handleGoBack}>
@@ -582,17 +543,25 @@ const WriteDiaryScreen: React.FC<WriteDiaryScreenProps> = ({ onGoBack, onSave })
       
       {/* 主要内容区域 */}
       <ScrollView style={styles.contentContainer} showsVerticalScrollIndicator={false}>
-        {/* 标题输入 */}
-        <CustomTextInput
-          placeholder="请输入日记标题..."
-          value={title}
-          onChangeText={(text) => handleTextChange(text, 'title')}
-          maxLength={50}
-          style={styles.titleInput}
-        />
+        {/* 标题输入区域 */}
+        <View style={styles.titleContainer}>
+          <CustomTextInput
+            placeholder="请输入日记标题..."
+            value={title}
+            onChangeText={(text) => handleTextChange(text, 'title')}
+            maxLength={50}
+            style={styles.titleInput}
+          />
+          {selectedMood && (
+            <View style={styles.titleMoodContainer}>
+              <Text style={styles.titleMoodEmoji}>{selectedMood.emoji}</Text>
+            </View>
+          )}
+        </View>
         
         {/* 内容输入 */}
         <CustomTextInput
+          ref={contentInputRef}
           placeholder="记录你的心情和想法..."
           value={content}
           onChangeText={(text) => handleTextChange(text, 'content')}
@@ -654,7 +623,15 @@ const WriteDiaryScreen: React.FC<WriteDiaryScreenProps> = ({ onGoBack, onSave })
         <TouchableOpacity 
           ref={emojiButtonRef}
           style={styles.toolButton}
-          onPress={() => setShowEmojiPicker(!showEmojiPicker)}
+          onPress={() => {
+            setShowEmojiPicker(!showEmojiPicker);
+            // 确保内容输入框保持焦点
+            if (!showEmojiPicker) {
+              setTimeout(() => {
+                contentInputRef.current?.focus();
+              }, 100);
+            }
+          }}
         >
           <Text style={styles.toolButtonText}>😀</Text>
         </TouchableOpacity>
@@ -682,44 +659,14 @@ const WriteDiaryScreen: React.FC<WriteDiaryScreenProps> = ({ onGoBack, onSave })
         </TouchableOpacity>
       </View>
       
-      {/* 心情选择模态框 */}
-      <Modal
+      {/* 心情选择器 */}
+      <MoodPicker
         visible={showMoodPicker}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setShowMoodPicker(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>选择心情</Text>
-            <ScrollView>
-              <View style={styles.moodGrid}>
-                {moodOptions.map((mood, index) => (
-                  <TouchableOpacity
-                    key={index}
-                    style={[
-                      styles.moodOption,
-                      selectedMood?.emoji === mood.emoji && styles.moodOptionSelected
-                    ]}
-                    onPress={() => handleSelectMood(mood)}
-                  >
-                    <Text style={styles.moodEmoji}>{mood.emoji}</Text>
-                    <Text style={styles.moodLabel}>{mood.label}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-            </ScrollView>
-            <View style={styles.modalButtons}>
-              <TouchableOpacity
-                style={[styles.modalButton, styles.cancelButton]}
-                onPress={() => setShowMoodPicker(false)}
-              >
-                <Text style={[styles.modalButtonText, styles.cancelButtonText]}>取消</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
+        onMoodSelect={handleSelectMood}
+        onClose={() => setShowMoodPicker(false)}
+        selectedMood={selectedMood}
+        moodOptions={moodOptions}
+      />
       
       {/* 标签输入模态框 */}
       <Modal
@@ -762,37 +709,11 @@ const WriteDiaryScreen: React.FC<WriteDiaryScreenProps> = ({ onGoBack, onSave })
       </Modal>
       
       {/* 表情选择器 */}
-      {showEmojiPicker && (
-        <TouchableOpacity 
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-          }}
-          activeOpacity={1}
-          onPress={() => setShowEmojiPicker(false)}
-        >
-          <View style={styles.emojiPickerContainer}>
-            <TouchableOpacity activeOpacity={1} onPress={(e) => e.stopPropagation()}>
-              <ScrollView showsVerticalScrollIndicator={false}>
-                <View style={styles.emojiGrid}>
-                  {emojiOptions.map((emoji, index) => (
-                    <TouchableOpacity
-                      key={index}
-                      style={styles.emojiItem}
-                      onPress={() => handleInsertEmoji(emoji)}
-                    >
-                      <Text style={styles.emojiText}>{emoji}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              </ScrollView>
-            </TouchableOpacity>
-          </View>
-        </TouchableOpacity>
-      )}
+      <EmojiPicker
+        visible={showEmojiPicker}
+        onEmojiSelect={handleInsertEmoji}
+        onClose={() => setShowEmojiPicker(false)}
+      />
       
       {/* 图片选项模态框 */}
       <Modal
@@ -830,7 +751,8 @@ const WriteDiaryScreen: React.FC<WriteDiaryScreenProps> = ({ onGoBack, onSave })
           </View>
         </View>
       </Modal>
-    </SafeAreaView>
+      </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 };
 

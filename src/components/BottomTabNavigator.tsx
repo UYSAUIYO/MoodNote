@@ -7,6 +7,7 @@ import {
   Dimensions,
 } from 'react-native';
 import { useTheme } from '../theme/ThemeContext';
+import { HomeIcon, StatsIcon, AchievementIcon, ProfileIcon } from './Icons';
 
 interface BottomTabNavigatorProps {
   activeTab: string;
@@ -20,10 +21,10 @@ const BottomTabNavigator: React.FC<BottomTabNavigatorProps> = ({
   const { theme } = useTheme();
 
   const tabs = [
-    { id: 'home', label: '主页', icon: '🏠' },
-    { id: 'stats', label: '统计', icon: '📊' },
-    { id: 'achievements', label: '成就', icon: '🏆' },
-    { id: 'profile', label: '我的', icon: '👤' },
+    { id: 'home', label: '主页', IconComponent: HomeIcon },
+    { id: 'stats', label: '统计', IconComponent: StatsIcon },
+    { id: 'achievements', label: '成就', IconComponent: AchievementIcon },
+    { id: 'profile', label: '我的', IconComponent: ProfileIcon },
   ];
 
   const styles = StyleSheet.create({
@@ -54,8 +55,7 @@ const BottomTabNavigator: React.FC<BottomTabNavigatorProps> = ({
       borderRadius: theme.borderRadius.md,
       marginHorizontal: 4,
     },
-    icon: {
-      fontSize: 24,
+    iconContainer: {
       marginBottom: 4,
     },
     label: {
@@ -71,17 +71,26 @@ const BottomTabNavigator: React.FC<BottomTabNavigatorProps> = ({
 
   return (
     <View style={styles.container}>
-      {tabs.map((tab) => (
-        <TouchableOpacity
-          key={tab.id}
-          style={[
-            styles.tab,
+      {tabs.map((tab) => {
+        const { IconComponent } = tab;
+        const isActive = activeTab === tab.id;
+        
+        return (
+          <TouchableOpacity
+            key={tab.id}
+            style={[
+              styles.tab,
             activeTab === tab.id && styles.activeTab,
           ]}
           onPress={() => onTabPress(tab.id)}
           activeOpacity={0.7}
         >
-          <Text style={styles.icon}>{tab.icon}</Text>
+          <View style={styles.iconContainer}>
+            <IconComponent 
+              size={24} 
+              color={isActive ? theme.colors.primary : theme.colors.textSecondary}
+            />
+          </View>
           <Text
             style={[
               styles.label,
@@ -91,7 +100,8 @@ const BottomTabNavigator: React.FC<BottomTabNavigatorProps> = ({
             {tab.label}
           </Text>
         </TouchableOpacity>
-      ))}
+        );
+      })}
     </View>
   );
 };

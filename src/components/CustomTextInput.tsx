@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import {
   TextInput,
   View,
@@ -29,24 +29,27 @@ interface CustomTextInputProps extends TextInputProps {
   onBlur?: () => void;
 }
 
-const CustomTextInput: React.FC<CustomTextInputProps> = ({
-  label,
-  value,
-  onChangeText,
-  placeholder,
-  secureTextEntry = false,
-  keyboardType = 'default',
-  autoCapitalize = 'sentences',
-  autoCorrect = true,
-  multiline = false,
-  maxLength,
-  editable = true,
-  error,
-  style,
-  containerStyle,
-  onFocus,
-  onBlur,
-}) => {
+const CustomTextInput = forwardRef<TextInput, CustomTextInputProps>((
+  {
+    label,
+    value,
+    onChangeText,
+    placeholder,
+    secureTextEntry = false,
+    keyboardType = 'default',
+    autoCapitalize = 'sentences',
+    autoCorrect = true,
+    multiline = false,
+    maxLength,
+    editable = true,
+    error,
+    style,
+    containerStyle,
+    onFocus,
+    onBlur,
+  },
+  ref
+) => {
   const { theme } = useTheme();
 
   const styles = StyleSheet.create({
@@ -97,6 +100,7 @@ const CustomTextInput: React.FC<CustomTextInputProps> = ({
     <View style={[styles.container, containerStyle]}>
       {label && <Text style={styles.label}>{label}</Text>}
       <TextInput
+        ref={ref}
         style={[
           styles.input,
           multiline && styles.multilineInput,
@@ -121,6 +125,6 @@ const CustomTextInput: React.FC<CustomTextInputProps> = ({
       {error && <Text style={styles.errorText}>{error}</Text>}
     </View>
   );
-};
+});
 
 export default CustomTextInput;

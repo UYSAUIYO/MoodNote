@@ -16,6 +16,7 @@ import {
   Switch,
 } from 'react-native';
 import { useTheme } from '../theme/ThemeContext';
+import { BackIcon, SaveIcon, ProfileIcon, CloudIcon } from '../components/Icons';
 
 interface SettingsScreenProps {
   onGoBack: () => void;
@@ -97,10 +98,13 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onGoBack, onNavigateToP
     },
     backButton: {
       padding: theme.spacing.sm,
+      flexDirection: 'row',
+      alignItems: 'center',
     },
     backButtonText: {
       fontSize: 16,
-      color: theme.colors.primary,
+      color: theme.colors.text,
+      marginLeft: theme.spacing.xs,
     },
     headerTitle: {
       fontSize: 18,
@@ -109,11 +113,14 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onGoBack, onNavigateToP
     },
     saveButton: {
       padding: theme.spacing.sm,
+      flexDirection: 'row',
+      alignItems: 'center',
     },
     saveButtonText: {
       fontSize: 16,
       color: theme.colors.primary,
       fontWeight: '600',
+      marginLeft: theme.spacing.xs,
     },
     content: {
       flex: 1,
@@ -177,6 +184,12 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onGoBack, onNavigateToP
       width: 24,
       textAlign: 'center',
     },
+    menuIconContainer: {
+      marginRight: theme.spacing.md,
+      width: 24,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
     menuText: {
       fontSize: 16,
       color: theme.colors.text,
@@ -213,10 +226,12 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onGoBack, onNavigateToP
       {/* 头部导航 */}
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={onGoBack}>
-          <Text style={styles.backButtonText}>‹ 返回</Text>
+          <BackIcon size={20} color={theme.colors.text} />
+          <Text style={styles.backButtonText}>返回</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>账号设置</Text>
         <TouchableOpacity style={styles.saveButton} onPress={handleSaveSettings}>
+          <SaveIcon size={20} color={theme.colors.primary} />
           <Text style={styles.saveButtonText}>保存</Text>
         </TouchableOpacity>
       </View>
@@ -228,7 +243,9 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onGoBack, onNavigateToP
           
           <TouchableOpacity style={styles.menuItem} onPress={onNavigateToProfile}>
             <View style={styles.menuItemLeft}>
-              <Text style={styles.menuIcon}>👤</Text>
+              <View style={styles.menuIconContainer}>
+                <ProfileIcon size={20} color={theme.colors.primary} />
+              </View>
               <Text style={styles.menuText}>编辑个人资料</Text>
             </View>
             <Text style={styles.menuArrow}>›</Text>
@@ -309,7 +326,9 @@ const SettingsScreen: React.FC<SettingsScreenProps> = ({ onGoBack, onNavigateToP
 
           <View style={styles.menuItem}>
             <View style={styles.menuItemLeft}>
-              <Text style={styles.menuIcon}>☁️</Text>
+              <View style={styles.menuIconContainer}>
+                <CloudIcon size={20} color={theme.colors.primary} />
+              </View>
               <Text style={styles.menuText}>自动备份</Text>
             </View>
             <Switch

@@ -10,6 +10,7 @@ import {
   Switch,
 } from 'react-native';
 import { useTheme } from '../theme/ThemeContext';
+import { ThemeIcon, SettingsIcon, InfoIcon, ProfileIcon, NotificationIcon, ClockIcon, FeedbackIcon, PrivacyIcon } from '../components/Icons';
 
 interface ProfileScreenProps {
   onLogout?: () => void;
@@ -158,6 +159,12 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onLogout, onNavigateToSet
       width: 24,
       textAlign: 'center',
     },
+    menuIconContainer: {
+      marginRight: theme.spacing.md,
+      width: 24,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
     menuText: {
       fontSize: 16,
       color: theme.colors.text,
@@ -273,7 +280,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onLogout, onNavigateToSet
       {/* 右上角设置按钮 */}
       {onNavigateToSettings && (
         <TouchableOpacity style={styles.settingsButton} onPress={onNavigateToSettings}>
-          <Text style={styles.settingsButtonText}>⚙️</Text>
+          <SettingsIcon size={24} color={theme.colors.text} />
         </TouchableOpacity>
       )}
       <ScrollView
@@ -282,7 +289,7 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onLogout, onNavigateToSet
       >
         <View style={styles.header}>
           <View style={styles.avatar}>
-            <Text style={styles.avatarText}>👤</Text>
+            <ProfileIcon size={40} color={theme.colors.surface} />
           </View>
           <Text style={styles.username}>心情记录者</Text>
           <Text style={styles.userInfo}>已使用 42 天</Text>
@@ -310,7 +317,9 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onLogout, onNavigateToSet
 
           <TouchableOpacity style={styles.menuItem} onPress={toggleTheme}>
             <View style={styles.menuItemLeft}>
-              <Text style={styles.menuIcon}>{theme.isDark ? '🌙' : '☀️'}</Text>
+              <View style={styles.menuIconContainer}>
+                <ThemeIcon size={20} color={theme.colors.primary} isDark={theme.isDark} />
+              </View>
               <Text style={styles.menuText}>主题模式</Text>
             </View>
             <Text style={styles.menuArrow}>{theme.isDark ? '深色' : '浅色'}</Text>
@@ -318,7 +327,9 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onLogout, onNavigateToSet
 
           <View style={styles.menuItem}>
             <View style={styles.menuItemLeft}>
-              <Text style={styles.menuIcon}>🔔</Text>
+              <View style={styles.menuIconContainer}>
+                <NotificationIcon size={20} color={theme.colors.primary} />
+              </View>
               <Text style={styles.menuText}>推送通知</Text>
             </View>
             <Switch
@@ -331,7 +342,9 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onLogout, onNavigateToSet
 
           <View style={styles.menuItem}>
             <View style={styles.menuItemLeft}>
-              <Text style={styles.menuIcon}>⏰</Text>
+              <View style={styles.menuIconContainer}>
+                <ClockIcon size={20} color={theme.colors.primary} />
+              </View>
               <Text style={styles.menuText}>每日提醒</Text>
             </View>
             <Switch
@@ -348,7 +361,9 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onLogout, onNavigateToSet
 
           <TouchableOpacity style={styles.menuItem} onPress={handleFeedback}>
             <View style={styles.menuItemLeft}>
-              <Text style={styles.menuIcon}>💬</Text>
+              <View style={styles.menuIconContainer}>
+                <FeedbackIcon size={20} color={theme.colors.primary} />
+              </View>
               <Text style={styles.menuText}>意见反馈</Text>
             </View>
             <Text style={styles.menuArrow}>›</Text>
@@ -356,7 +371,9 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onLogout, onNavigateToSet
 
           <TouchableOpacity style={styles.menuItem} onPress={handlePrivacy}>
             <View style={styles.menuItemLeft}>
-              <Text style={styles.menuIcon}>🔒</Text>
+              <View style={styles.menuIconContainer}>
+                <PrivacyIcon size={20} color={theme.colors.primary} />
+              </View>
               <Text style={styles.menuText}>隐私政策</Text>
             </View>
             <Text style={styles.menuArrow}>›</Text>
@@ -364,7 +381,9 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({ onLogout, onNavigateToSet
 
           <TouchableOpacity style={styles.menuItem} onPress={handleAbout}>
             <View style={styles.menuItemLeft}>
-              <Text style={styles.menuIcon}>ℹ️</Text>
+              <View style={styles.menuIconContainer}>
+                <InfoIcon size={20} color={theme.colors.primary} />
+              </View>
               <Text style={styles.menuText}>关于我们</Text>
             </View>
             <Text style={styles.menuArrow}>›</Text>
