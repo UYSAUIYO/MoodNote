@@ -27,16 +27,16 @@ import StatsScreen from './src/screens/StatsScreen';
 import AchievementsScreen from './src/screens/AchievementsScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
 import DiaryListScreen from './src/screens/DiaryListScreen';
+import DiaryEditScreen from './src/screens/DiaryEditScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
 import ProfileEditScreen from './src/screens/ProfileEditScreen';
-import WriteDiaryScreen from './src/screens/WriteDiaryScreen';
 import BottomTabNavigator from './src/components/BottomTabNavigator';
 import SplashScreen from './src/components/SplashScreen';
 
 const AppContent = () => {
   const { theme, toggleTheme } = useTheme();
   const [showSplash, setShowSplash] = useState(true);
-  const [currentScreen, setCurrentScreen] = useState<'login' | 'register' | 'home' | 'diaryList' | 'settings' | 'profileEdit' | 'writeDiary'>('login');
+  const [currentScreen, setCurrentScreen] = useState<'login' | 'register' | 'home' | 'diaryList' | 'diaryEdit' | 'settings' | 'profileEdit'>('login');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [activeTab, setActiveTab] = useState('home');
   const [backPressCount, setBackPressCount] = useState(0);
@@ -76,9 +76,10 @@ const AppContent = () => {
       // 二级页面：账号资料编辑 -> 设置页面
       setCurrentScreen('settings');
       return true;
-    } else if (currentScreen === 'writeDiary') {
-      // 二级页面：写日记 -> 日记列表
-      setCurrentScreen('diaryList');
+    } else if (currentScreen === 'diaryEdit') {
+      // 二级页面：写日记 -> 主页
+      setCurrentScreen('home');
+      setActiveTab('home');
       return true;
     } else if (currentScreen === 'settings' || currentScreen === 'diaryList') {
       // 一级页面：设置/日记列表 -> 主页
@@ -261,21 +262,22 @@ const AppContent = () => {
     setCurrentScreen('settings');
   };
 
-  // 导航到写日记页面
-  const handleNavigateToWriteDiary = () => {
-    setCurrentScreen('writeDiary');
+
+  // 导航到新建日记页面
+  const handleNavigateToNewDiary = () => {
+    setCurrentScreen('diaryEdit');
   };
 
   // 从写日记页面返回
   const handleGoBackFromWriteDiary = () => {
-    setCurrentScreen('diaryList');
+    setCurrentScreen('home');
   };
 
   // 渲染当前活跃的标签页内容
   const renderActiveTabContent = () => {
     switch (activeTab) {
       case 'home':
-        return <HomeScreen onLogout={handleLogout} onNavigateToDiaryList={handleNavigateToDiaryList} />;
+        return <HomeScreen onLogout={handleLogout} onNavigateToDiaryList={handleNavigateToDiaryList} onNavigateToNewDiary={handleNavigateToNewDiary} />;
       case 'stats':
         return <StatsScreen />;
       case 'achievements':
@@ -283,7 +285,7 @@ const AppContent = () => {
       case 'profile':
         return <ProfileScreen onLogout={handleLogout} onNavigateToSettings={handleNavigateToSettings} />;
       default:
-        return <HomeScreen onLogout={handleLogout} onNavigateToDiaryList={handleNavigateToDiaryList} />;
+        return <HomeScreen onLogout={handleLogout} onNavigateToDiaryList={handleNavigateToDiaryList} onNavigateToNewDiary={handleNavigateToNewDiary} />;
     }
   };
 
@@ -318,24 +320,26 @@ const AppContent = () => {
 
       {/* 根据登录状态和当前屏幕显示不同组件 */}
       {isLoggedIn ? (
-        currentScreen === 'diaryList' ? (
-          <DiaryListScreen 
-            onGoBack={handleGoBackFromDiaryList} 
-            onWriteDiary={handleNavigateToWriteDiary}
-          />
-        ) : currentScreen === 'settings' ? (
+       currentScreen === 'settings' ? (
           <SettingsScreen 
             onGoBack={handleGoBackFromSettings} 
             onNavigateToProfile={handleNavigateToProfileEdit}
           />
         ) : currentScreen === 'profileEdit' ? (
           <ProfileEditScreen onGoBack={handleGoBackFromProfileEdit} />
-        ) : currentScreen === 'writeDiary' ? (
-          <WriteDiaryScreen 
-            onGoBack={handleGoBackFromWriteDiary}
-            onSave={(diaryData) => {
+        ) : currentScreen === 'diaryList' ? (
+          <DiaryListScreen 
+            onGoBack={handleGoBackFromDiaryList}
+            onWriteDiary={handleNavigateToNewDiary}
+          />
+        ) : currentScreen === 'diaryEdit' ? (
+          <DiaryEditScreen 
+            onBack={handleGoBackFromWriteDiary}
+            onSave={(diary) => {
               // 这里可以添加保存日记的逻辑
-              console.log('保存日记:', diaryData);
+              console.log('保存日记:', diary);
+              // 保存成功后返回主页
+              handleGoBackFromWriteDiary();
             }}
           />
         ) : (

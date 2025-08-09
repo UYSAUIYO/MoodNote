@@ -19,10 +19,11 @@ import { useTheme } from '../theme/ThemeContext';
 interface HomeScreenProps {
   onLogout?: () => void; // 可选的登出回调函数
   onNavigateToDiaryList?: () => void; // 可选的导航到日记列表回调函数
+  onNavigateToNewDiary?: () => void; // 可选的导航到新建日记回调函数
 }
 
 // 主屏幕组件：心情记录应用的核心界面
-const HomeScreen: React.FC<HomeScreenProps> = ({ onLogout, onNavigateToDiaryList }) => {
+const HomeScreen: React.FC<HomeScreenProps> = ({ onLogout, onNavigateToDiaryList, onNavigateToNewDiary }) => {
   // 获取当前主题配置
   const { theme } = useTheme();
   
@@ -124,7 +125,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onLogout, onNavigateToDiaryList
       // 更新每日心情记录，使用函数式更新确保状态不可变性
       setDailyMoods(prev => ({
         ...prev, // 保留之前的记录
-        [dateKey]: { emoji: moodData.emoji, label: moodData.label } // 添加或更新当前日期的心情
+        [dateKey]: { emoji: moodData.emoji, label: moodData.label } // 添加或更新当前选中日期的心情
       }));
     }
   };
@@ -685,6 +686,24 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onLogout, onNavigateToDiaryList
       lineHeight: 32, // 行高与高度一致实现垂直居中
       fontWeight: '700', // 粗体
     },
+    // 选中日期的单元格样式（月视图）
+    selectedDayCell: {
+      backgroundColor: theme.colors.primary + '20', // 主题色背景，20%透明度
+      borderRadius: theme.borderRadius.sm, // 小圆角
+      borderWidth: 2, // 边框宽度
+      borderColor: theme.colors.primary, // 主题色边框
+    },
+    // 选中日期的数字样式
+    selectedDayNumber: {
+      backgroundColor: theme.colors.primary, // 主题色背景
+      color: theme.colors.buttonText, // 按钮文本颜色
+      borderRadius: 16, // 圆形背景
+      width: 32, // 固定宽度
+      height: 32, // 固定高度
+      textAlign: 'center', // 居中对齐
+      lineHeight: 32, // 行高与高度一致实现垂直居中
+      fontWeight: '700', // 粗体
+    },
     // === 周视图相关样式 ===
     // 周视图容器
     weekView: {
@@ -721,6 +740,13 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onLogout, onNavigateToDiaryList
       fontWeight: '600', // 半粗体
       color: theme.colors.text, // 主题文本颜色
       textAlign: 'center', // 居中对齐
+    },
+    // 选中日期的单元格样式（周视图）
+    selectedWeekDayCell: {
+      backgroundColor: theme.colors.primary + '20', // 主题色背景，20%透明度
+      borderRadius: theme.borderRadius.sm, // 小圆角
+      borderWidth: 2, // 边框宽度
+      borderColor: theme.colors.primary, // 主题色边框
     },
     // === 心情选择相关样式 ===
     // 已选择心情显示区域
@@ -819,6 +845,87 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onLogout, onNavigateToDiaryList
       color: '#FFFFFF', // 白色文本（在彩色背景上显示）
       marginTop: 2, // 顶部外边距
       textAlign: 'center', // 居中对齐
+    },
+
+    // === 日记列表相关样式 ===
+    // 日记区域容器
+    diarySection: {
+      marginBottom: theme.spacing.lg, // 底部外边距
+    },
+    // 日记区域标题头部
+    diarySectionHeader: {
+      flexDirection: 'row', // 水平排列
+      justifyContent: 'space-between', // 两端对齐
+      alignItems: 'center', // 垂直居中
+      marginBottom: theme.spacing.md, // 底部外边距
+    },
+    // 查看全部按钮
+    viewAllButton: {
+      backgroundColor: theme.colors.primary, // 主题色背景
+      paddingHorizontal: theme.spacing.md, // 水平内边距
+      paddingVertical: theme.spacing.sm, // 垂直内边距
+      borderRadius: theme.borderRadius.md, // 中等圆角
+    },
+    // 查看全部按钮文本
+    viewAllButtonText: {
+      color: theme.colors.buttonText, // 按钮文本颜色
+      fontSize: 14, // 中等字号
+      fontWeight: '600', // 半粗体
+    },
+    // 日记列表容器
+    diaryList: {
+      gap: theme.spacing.sm, // 项目间距
+    },
+    // 日记项目
+    diaryItem: {
+      backgroundColor: theme.colors.surface, // 表面颜色
+      borderRadius: theme.borderRadius.lg, // 大圆角
+      padding: theme.spacing.md, // 内边距
+      borderWidth: 1, // 边框宽度
+      borderColor: theme.colors.inputBorder, // 边框颜色
+    },
+    // 日记项目头部
+    diaryItemHeader: {
+      flexDirection: 'row', // 水平排列
+      justifyContent: 'space-between', // 两端对齐
+      alignItems: 'center', // 垂直居中
+      marginBottom: theme.spacing.sm, // 底部外边距
+    },
+    // 日记日期
+    diaryDate: {
+      fontSize: 14, // 中等字号
+      fontWeight: '600', // 半粗体
+      color: theme.colors.textSecondary, // 次要文本颜色
+    },
+    // 日记心情
+    diaryMood: {
+      fontSize: 16, // 中等字号
+    },
+    // 日记预览文本
+    diaryPreview: {
+      fontSize: 14, // 中等字号
+      color: theme.colors.text, // 主题文本颜色
+      lineHeight: 20, // 行高
+    },
+    // 空日记容器
+    emptyDiaryContainer: {
+      alignItems: 'center', // 水平居中
+      paddingVertical: theme.spacing.xl, // 垂直内边距
+    },
+    // 写日记按钮
+    writeDiaryButton: {
+      backgroundColor: theme.colors.primary, // 主题色背景
+      paddingHorizontal: theme.spacing.lg, // 水平内边距
+      paddingVertical: theme.spacing.md, // 垂直内边距
+      borderRadius: theme.borderRadius.lg, // 大圆角
+      width: '33.33%', // 三分之一宽度
+      alignItems: 'center', // 水平居中
+    },
+    // 写日记按钮文本
+    writeDiaryButtonText: {
+      color: theme.colors.buttonText, // 按钮文本颜色
+      fontSize: 16, // 中等字号
+      fontWeight: '600', // 半粗体
     },
 
     // === 悬浮心情记录按钮样式 ===
@@ -958,7 +1065,10 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onLogout, onNavigateToDiaryList
                     return (
                       <TouchableOpacity
                         key={index}
-                        style={styles.dayCell}
+                        style={[
+                          styles.dayCell,
+                          date.toDateString() === currentDate.toDateString() && styles.selectedDayCell
+                        ]}
                         onPress={() => setCurrentDate(date)}
                         activeOpacity={0.7}
                       >
@@ -967,14 +1077,15 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onLogout, onNavigateToDiaryList
                             {dayMood ? dayMood.emoji : ''}
                           </Text>
                           <Text
-                            style={[
-                              styles.dayNumber,
-                              !dateInfo.isCurrentMonth && styles.dayNumberInactive,
-                              dateInfo.isToday && styles.dayNumberToday,
-                            ]}
-                          >
-                            {dateInfo.day}
-                          </Text>
+                          style={[
+                            styles.dayNumber,
+                            !dateInfo.isCurrentMonth && styles.dayNumberInactive,
+                            dateInfo.isToday && styles.dayNumberToday,
+                            date.toDateString() === currentDate.toDateString() && !dateInfo.isToday && styles.selectedDayNumber,
+                          ]}
+                        >
+                          {dateInfo.day}
+                        </Text>
                         </View>
                       </TouchableOpacity>
                     );
@@ -999,7 +1110,10 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onLogout, onNavigateToDiaryList
                       return (
                         <TouchableOpacity
                           key={index}
-                          style={styles.weekDayCell}
+                          style={[
+                            styles.weekDayCell,
+                            date.toDateString() === currentDate.toDateString() && styles.selectedWeekDayCell
+                          ]}
                           onPress={() => setCurrentDate(date)}
                           activeOpacity={0.7}
                         >
@@ -1011,6 +1125,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onLogout, onNavigateToDiaryList
                               style={[
                                 styles.weekDayNumber,
                                 dateInfo.isToday && styles.dayNumberToday,
+                                date.toDateString() === currentDate.toDateString() && !dateInfo.isToday && styles.selectedDayNumber,
                               ]}
                             >
                               {dateInfo.day}
@@ -1025,29 +1140,74 @@ const HomeScreen: React.FC<HomeScreenProps> = ({ onLogout, onNavigateToDiaryList
             </Animated.View>
           </View>
 
-          {/* 已选择的心情显示 */}
-          {selectedMood && (
-            <View style={styles.selectedMoodDisplay}>
-              <Text style={styles.selectedMoodEmoji}>
-                {moodOptions.find(mood => mood.label === selectedMood)?.emoji}
-              </Text>
-              <Text style={styles.selectedMoodText}>
-                当前心情：{selectedMood}
-              </Text>
-            </View>
-          )}
+          {/* 当前选中日期的心情显示 */}
+          {(() => {
+            const currentDateMood = getMoodForDate(currentDate);
+            const isToday = currentDate.toDateString() === new Date().toDateString();
+            const dateText = isToday ? '今天' : `${currentDate.getMonth() + 1}月${currentDate.getDate()}日`;
+            
+            return currentDateMood ? (
+              <View style={styles.selectedMoodDisplay}>
+                <Text style={styles.selectedMoodEmoji}>
+                  {currentDateMood.emoji}
+                </Text>
+                <Text style={styles.selectedMoodText}>
+                  {dateText}的心情：{currentDateMood.label}
+                </Text>
+              </View>
+            ) : (
+              <View style={styles.selectedMoodDisplay}>
+                <Text style={styles.selectedMoodText}>
+                  {dateText}还没有记录心情
+                </Text>
+              </View>
+            );
+          })()}
 
-          <Text style={styles.sectionTitle}>快捷操作</Text>
-          <View style={styles.quickActions}>
-            <TouchableOpacity style={styles.actionButton} onPress={onNavigateToDiaryList}>
-              <Text style={styles.actionButtonText}>📝 写心情日记</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.actionButton}>
-              <Text style={styles.actionButtonText}>📊 查看心情统计</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.actionButton}>
-              <Text style={styles.actionButtonText}>🎯 设置心情目标</Text>
-            </TouchableOpacity>
+          <View style={styles.diarySection}>
+            <View style={styles.diarySectionHeader}>
+              <Text style={styles.sectionTitle}>日记列表</Text>
+              <TouchableOpacity style={styles.viewAllButton} onPress={onNavigateToDiaryList}>
+                <Text style={styles.viewAllButtonText}>全部内容</Text>
+              </TouchableOpacity>
+            </View>
+            
+            {/* 最近一周的日记内容 */}
+             {(() => {
+               // 获取最近一周的日记（这里暂时用模拟数据，实际应该从数据源获取）
+               const recentDiaries: Array<{
+                 date: string;
+                 mood: string;
+                 content: string;
+               }> = [];
+              
+              if (recentDiaries.length > 0) {
+                return (
+                  <View style={styles.diaryList}>
+                    {recentDiaries.map((diary, index) => (
+                      <TouchableOpacity key={index} style={styles.diaryItem}>
+                        <View style={styles.diaryItemHeader}>
+                          <Text style={styles.diaryDate}>{diary.date}</Text>
+                          <Text style={styles.diaryMood}>{diary.mood}</Text>
+                        </View>
+                        <Text style={styles.diaryPreview} numberOfLines={2}>
+                          {diary.content}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                );
+              } else {
+                return (
+                  <View style={styles.emptyDiaryContainer}>
+                    <TouchableOpacity style={styles.writeDiaryButton} onPress={onNavigateToNewDiary}>
+                      <Text style={styles.writeDiaryButtonText}>写一篇日记吧</Text>
+                    </TouchableOpacity>
+                  </View>
+                );
+              }
+            })()
+            }
           </View>
         </Animated.View>
       </ScrollView>
